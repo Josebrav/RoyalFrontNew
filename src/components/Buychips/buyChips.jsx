@@ -72,11 +72,6 @@ export default function BuyChips() {
   const [paymentHistory, setPaymentHistory] = useState([]);
   const [loadingHistory, setLoadingHistory] = useState(false);
 
-  // Simulated withdrawal form state
-  const [withdrawalAmount, setWithdrawalAmount] = useState("");
-  const [withdrawalMethod, setWithdrawalMethod] = useState("bank");
-  const [withdrawalDetails, setWithdrawalDetails] = useState("");
-
   // Simulated credit card form state
   const [ccNumber, setCcNumber] = useState("");
   const [ccName, setCcName] = useState("");
@@ -251,53 +246,6 @@ export default function BuyChips() {
     });
   };
 
-  // Simulated withdrawal submission
-  const handleWithdrawalSubmit = (e) => {
-    e.preventDefault();
-    const amountVal = parseFloat(withdrawalAmount);
-    if (isNaN(amountVal) || amountVal <= 0) {
-      Swal.fire({
-        icon: "error",
-        title: "Monto Inválido",
-        text: "Por favor ingresa un monto válido para retirar.",
-        confirmButtonColor: "#C9A84C",
-      });
-      return;
-    }
-
-    if (!withdrawalDetails) {
-      Swal.fire({
-        icon: "error",
-        title: "Datos Faltantes",
-        text: "Por favor ingresa la información de cuenta/wallet.",
-        confirmButtonColor: "#C9A84C",
-      });
-      return;
-    }
-
-    // Verify chips requirement (1,000 chips = $1.00 USD)
-    const chipsRequired = amountVal * 1000;
-    if (currentUser && (currentUser.chips || 0) < chipsRequired) {
-      Swal.fire({
-        icon: "warning",
-        title: "Saldo Insuficiente",
-        text: `No tienes suficientes fichas. Requieres al menos ${new Intl.NumberFormat('es-ES').format(chipsRequired)} fichas para este retiro.`,
-        confirmButtonColor: "#C9A84C",
-      });
-      return;
-    }
-
-    Swal.fire({
-      icon: "success",
-      title: "Solicitud Recibida",
-      text: `Tu solicitud de retiro por ${symbol}${amountVal.toFixed(2)} ha sido registrada con éxito. VIP Express: de 2 a 12 horas.`,
-      confirmButtonColor: "#C9A84C",
-    });
-
-    setWithdrawalAmount("");
-    setWithdrawalDetails("");
-  };
-
   // Helper formatting for platform name
   const formatPlatformName = (platform) => {
     if (!platform) return "Sistema";
@@ -333,7 +281,7 @@ export default function BuyChips() {
               </span>
               <h2 className="font-headline-md text-headline-md text-white font-bold">Sesión Requerida</h2>
               <p className="font-body-sm text-body-sm text-on-surface-variant leading-relaxed">
-                Debes iniciar sesión con tu cuenta para acceder a la billetera, depositar fichas y gestionar retiros de forma segura.
+                Debes iniciar sesión con tu cuenta para acceder a la billetera y depositar fichas de forma segura.
               </p>
               <button
                 onClick={() => navigate("/")}
@@ -844,7 +792,7 @@ export default function BuyChips() {
                 <div className="flex justify-between items-center text-left">
                   <div>
                     <h3 className="font-headline-sm text-headline-sm text-white mb-1">Registro de Auditoría Financiera</h3>
-                    <p className="text-body-sm text-on-surface-variant">Tus últimos movimientos, depósitos y retiros en el casino.</p>
+                    <p className="text-body-sm text-on-surface-variant">Tus últimos depósitos y movimientos de fichas en el casino.</p>
                   </div>
                 </div>
 
