@@ -84,6 +84,17 @@ export const GAMES_CATALOG = [
       "Tragamonedas navideña con símbolos wild que se expanden y multiplican tus ganancias. Encontrá a Santa y desbloqueá rondas bonus llenas de regalos.",
   },
   {
+    slug: "sugarcalavera",
+    name: "Sugar Calavera",
+    category: "slots",
+    status: "active",
+    icon: "cookie",
+    players: 1290,
+    playPath: "/play/sugarcalavera",
+    description:
+      "Tragamonedas con temática de calaveritas de azúcar: símbolos dulces, colores vibrantes y multiplicadores que celebran la buena suerte.",
+  },
+  {
     slug: "bingo",
     name: "Royal Bingo",
     category: "bingo",

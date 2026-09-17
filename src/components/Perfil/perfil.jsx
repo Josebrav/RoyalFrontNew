@@ -457,7 +457,7 @@ const Perfil = ({ isPublic = false }) => {
                 >
                   <span className="material-symbols-outlined text-[18px] sm:text-[20px]">settings</span>
                 </button>
-              )}
+              )} 
             </div>
 
             {/* Avatar / Photo, positioned inside the banner's frame */}
