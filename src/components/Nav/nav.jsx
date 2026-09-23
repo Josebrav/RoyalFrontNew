@@ -45,6 +45,11 @@ export default function Navbar() {
   // (and even React, since the `src` string never changes) would keep showing the old image
   // forever after an edit. `lastSeen` already refreshes on every navigation (heartbeat effect
   // in App.jsx), so it doubles as a free "did anything change" signal here.
+  // TEMPORAL: vuelto a avatar-image. El avatar-thumbnail que Unity genera hoy ancla el recorte
+  // "pegado abajo" del lienzo asumiendo que la captura es solo de pecho para arriba — desde que
+  // la cámara captura el cuerpo completo, eso ancla el cuadrado en las piernas, no en la cabeza.
+  // Volver a activar avatar-thumbnail recién cuando ExtractTopSquareThumbnail esté arreglado
+  // (ver SaveAvatarButton.cs) Y cada usuario haya vuelto a guardar su avatar en el Bazar.
   const avatarSrc = currentUser?.id
     ? `${API_URL}/user/${currentUser.id}/avatar-image?v=${currentUser.lastSeen ? new Date(currentUser.lastSeen).getTime() : 0}`
     : "https://lh3.googleusercontent.com/aida-public/AB6AXuCpCcNDDLhupT0iOwy1efwVKGf6ATUKCy6U7q50kyjk86DZ0ESSWDYB3IrG_VbQ2nLajCDmLvXOct59w89ERq7kJydta4x2rtj18hF3ffoEPNHFxRiAJHXOp4-joRLAss2GIpXRWXEpfCcn17eLUjcdKtMQDo4p-lNCzppHIIyPmM_WXToorkNt3NbXKLAfPkWDm4ln0gxkOhUv8fxWHOTdBFnPxsnTABAi2RPFBg9hCCwRzQGJ6YIBJ6Bvk8_pA9vPVUZpUJk60PQ";

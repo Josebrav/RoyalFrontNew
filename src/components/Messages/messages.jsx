@@ -9,6 +9,8 @@ import { fetchConversations, fetchThread, sendMessage } from "../../redux/action
 const POLL_INTERVAL_MS = 30000;
 
 function Avatar({ userId, nick, size = "w-11 h-11" }) {
+  // TEMPORAL: vuelto a avatar-image, ver nota en nav.jsx — el avatar-thumbnail actual ancla mal
+  // el recorte desde que la cámara del Bazar captura el cuerpo completo.
   const avatarSrc = userId ? `${API_URL}/user/${userId}/avatar-image` : null;
   const initials = (nick || "RG").slice(0, 2).toUpperCase();
   return (

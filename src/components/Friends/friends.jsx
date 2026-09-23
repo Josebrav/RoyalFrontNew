@@ -18,6 +18,8 @@ import {
 
 function UserRow({ user, children }) {
   const navigate = useNavigate();
+  // TEMPORAL: vuelto a avatar-image, ver nota en nav.jsx — el avatar-thumbnail actual ancla mal
+  // el recorte desde que la cámara del Bazar captura el cuerpo completo.
   const avatarSrc = user?.id ? `${API_URL}/user/${user.id}/avatar-image` : null;
   const initials = (user?.nick || "RG").slice(0, 2).toUpperCase();
 
