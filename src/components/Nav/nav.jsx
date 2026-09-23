@@ -55,12 +55,12 @@ export default function Navbar() {
     : "https://lh3.googleusercontent.com/aida-public/AB6AXuCpCcNDDLhupT0iOwy1efwVKGf6ATUKCy6U7q50kyjk86DZ0ESSWDYB3IrG_VbQ2nLajCDmLvXOct59w89ERq7kJydta4x2rtj18hF3ffoEPNHFxRiAJHXOp4-joRLAss2GIpXRWXEpfCcn17eLUjcdKtMQDo4p-lNCzppHIIyPmM_WXToorkNt3NbXKLAfPkWDm4ln0gxkOhUv8fxWHOTdBFnPxsnTABAi2RPFBg9hCCwRzQGJ6YIBJ6Bvk8_pA9vPVUZpUJk60PQ";
 
   return (
-    <header className={`sticky top-0 z-50 bg-surface/80 backdrop-blur-md border-b border-outline-variant/30 shadow-sm h-20 transition-all duration-300 pt-1` }>
-      <div className="grid grid-cols-[1fr_auto_1fr] items-center h-16 pl-0 pr-4 md:pr-margin-desktop w-full gap-2">
+    <header className={`sticky top-0 z-50 bg-surface/80 backdrop-blur-md border-b border-outline-variant/30 shadow-sm h-36 transition-all duration-300 pt-1` }>
+      <div className="grid grid-cols-[1fr_auto_1fr] items-center h-32 pl-0 pr-4 md:pr-margin-desktop w-full gap-2">
         {/* Left Section: Logo & Nav Links */}
         <div className="flex items-center gap-6 justify-self-start min-w-0">
           <Link to="/" className="flex items-center">
-            <img src={logo} className="h-12 md:h-14 w-auto object-contain pl-4 md:pl-6" alt="RGAMES" />
+            <img src={logo} className="h-14 md:h-16 w-auto object-contain pl-4 md:pl-6" alt="RGAMES" />
           </Link>
            
           {currentUser?.id ? (
@@ -162,12 +162,12 @@ export default function Navbar() {
         {/* Center Section: User chip (avatar + nick/rank + fichas), centered on the whole bar */}
         <div className="flex items-center justify-self-center">
           {currentUser?.id && (
-            <div className="hidden sm:flex items-center gap-3 bg-surface-container-high border border-primary/20 rounded-full pl-1 pr-1 py-1 max-w-[18rem] h-16 hover:border-primary/40 transition-colors">
+            <div className="hidden sm:flex items-center gap-4 bg-surface-container-high border border-primary/20 rounded-full p-2 max-w-[22rem] hover:border-primary/40 transition-colors">
               <button
                 type="button"
                 onClick={() => navigate('/bazar')}
                 title="Cambiar avatar"
-                className="w-14 h-14 rounded-full overflow-hidden border-2 border-primary/60 flex-shrink-0 bg-surface-container-lowest transition-transform hover:scale-105 focus:outline-none cursor-pointer p-0"
+                className="w-28 h-28 rounded-full overflow-hidden border-2 border-primary/60 flex-shrink-0 bg-surface-container-lowest transition-transform hover:scale-105 focus:outline-none cursor-pointer p-0"
               >
                 <img
                   alt="Avatar de Usuario"
@@ -192,13 +192,13 @@ export default function Navbar() {
                 className="flex flex-col items-start min-w-0 flex-1 bg-transparent border-0 cursor-pointer p-0 text-left"
               >
                 <span className="flex items-center gap-2 min-w-0 max-w-full">
-                  <span className="text-on-surface font-bold text-base truncate">
+                  <span className="text-on-surface font-bold text-lg truncate">
                     {currentUser.nick ? currentUser.nick.charAt(0).toUpperCase() + currentUser.nick.slice(1) : "Usuario"}
                   </span>
                   <RankBadge tier={currentUser.rank} size="md" />
                 </span>
-                <span className="flex items-center gap-1.5 text-primary text-sm font-bold tracking-wide mt-1">
-                  <img src={chips} alt="Fichas" className="w-4 h-4" />
+                <span className="flex items-center gap-1.5 text-primary text-base font-bold tracking-wide mt-1">
+                  <img src={chips} alt="Fichas" className="w-5 h-5" />
                   {formattedChips}
                 </span>
               </button>
@@ -212,9 +212,9 @@ export default function Navbar() {
             <button
               onClick={handleLogOut}
               title="Cerrar Sesión"
-              className="w-10 h-10 rounded-full flex items-center justify-center text-on-surface-variant hover:text-error hover:bg-error/10 transition-colors bg-transparent border-0 cursor-pointer flex-shrink-0"
+              className="w-12 h-12 rounded-full flex items-center justify-center text-on-surface-variant hover:text-error hover:bg-error/10 transition-colors bg-transparent border-0 cursor-pointer flex-shrink-0"
             >
-              <span className="material-symbols-outlined text-[20px]">logout</span>
+              <span className="material-symbols-outlined text-[22px]">logout</span>
             </button>
           ) : (
             <div className="flex gap-3">
