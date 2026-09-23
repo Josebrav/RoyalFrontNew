@@ -55,8 +55,8 @@ export default function Navbar() {
     : "https://lh3.googleusercontent.com/aida-public/AB6AXuCpCcNDDLhupT0iOwy1efwVKGf6ATUKCy6U7q50kyjk86DZ0ESSWDYB3IrG_VbQ2nLajCDmLvXOct59w89ERq7kJydta4x2rtj18hF3ffoEPNHFxRiAJHXOp4-joRLAss2GIpXRWXEpfCcn17eLUjcdKtMQDo4p-lNCzppHIIyPmM_WXToorkNt3NbXKLAfPkWDm4ln0gxkOhUv8fxWHOTdBFnPxsnTABAi2RPFBg9hCCwRzQGJ6YIBJ6Bvk8_pA9vPVUZpUJk60PQ";
 
   return (
-    <header className={`sticky top-0 z-50 bg-surface/80 backdrop-blur-md border-b border-outline-variant/30 shadow-sm h-28 transition-all duration-300 pt-1` }>
-      <div className="grid grid-cols-[1fr_auto_1fr] items-center h-24 pl-0 pr-4 md:pr-margin-desktop w-full gap-2">
+    <header className={`sticky top-0 z-50 bg-surface/80 backdrop-blur-md border-b border-outline-variant/30 shadow-sm h-20 transition-all duration-300 pt-1` }>
+      <div className="grid grid-cols-[1fr_auto_1fr] items-center h-16 pl-0 pr-4 md:pr-margin-desktop w-full gap-2">
         {/* Left Section: Logo & Nav Links */}
         <div className="flex items-center gap-6 justify-self-start min-w-0">
           <Link to="/" className="flex items-center">
@@ -162,12 +162,12 @@ export default function Navbar() {
         {/* Center Section: User chip (avatar + nick/rank + fichas), centered on the whole bar */}
         <div className="flex items-center justify-self-center">
           {currentUser?.id && (
-            <div className="hidden sm:flex items-center gap-4 bg-surface-container-high border border-primary/20 rounded-full p-2 max-w-[22rem] hover:border-primary/40 transition-colors">
+            <div className="hidden sm:flex items-center gap-3 bg-surface-container-high border border-primary/20 rounded-full pl-1 pr-1 py-1 max-w-[18rem] h-16 hover:border-primary/40 transition-colors">
               <button
                 type="button"
                 onClick={() => navigate('/bazar')}
                 title="Cambiar avatar"
-                className="w-20 h-20 rounded-full overflow-hidden border-2 border-primary/60 flex-shrink-0 bg-surface-container-lowest transition-transform hover:scale-105 focus:outline-none cursor-pointer p-0"
+                className="w-14 h-14 rounded-full overflow-hidden border-2 border-primary/60 flex-shrink-0 bg-surface-container-lowest transition-transform hover:scale-105 focus:outline-none cursor-pointer p-0"
               >
                 <img
                   alt="Avatar de Usuario"
@@ -212,7 +212,7 @@ export default function Navbar() {
             <button
               onClick={handleLogOut}
               title="Cerrar Sesión"
-              className="w-11 h-11 rounded-full flex items-center justify-center text-on-surface-variant hover:text-error hover:bg-error/10 transition-colors bg-transparent border-0 cursor-pointer flex-shrink-0"
+              className="w-10 h-10 rounded-full flex items-center justify-center text-on-surface-variant hover:text-error hover:bg-error/10 transition-colors bg-transparent border-0 cursor-pointer flex-shrink-0"
             >
               <span className="material-symbols-outlined text-[20px]">logout</span>
             </button>
