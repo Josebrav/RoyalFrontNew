@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
-import logo from "../../assets/logo.png";
+import logo from "../../assets/LogoOficial.PNG";
 import { useAuth } from "../../context/oauthContext";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
@@ -199,9 +199,15 @@ export default function Login({ className, children }) {
               onClick={toggleLoginBox} // Cierra al hacer clic en el fondo oscuro
             >
               <div
-                className="glass-card rounded-xl p-8 shadow-2xl relative max-w-md w-full space-y-6 z-10 my-8 overflow-hidden select-none"
+                className="rounded-xl p-8 shadow-[0_25px_70px_-15px_rgba(0,0,0,0.65),0_0_50px_-12px_rgba(201,168,76,0.15)] border border-primary/15 relative max-w-md w-full space-y-6 z-10 my-8 overflow-hidden select-none"
+                style={{ background: "linear-gradient(160deg, #1d1a26 0%, #131019 55%, #0b0a10 100%)" }}
                 onClick={(e) => e.stopPropagation()} // Evita que el clic cierre el cuadro
               >
+                {/* Filo dorado arriba, para que no se sienta como una caja plana */}
+                <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-primary/60 to-transparent pointer-events-none"></div>
+                {/* Brillo sutil tipo vidrio, más claro arriba-izquierda que abajo-derecha */}
+                <div className="absolute inset-0 bg-gradient-to-br from-white/[0.04] via-transparent to-black/10 pointer-events-none"></div>
+
                 {/* Atmospheric Background elements */}
                 <div className="bg-glow-spot -top-20 -left-20 pointer-events-none"></div>
                 <div className="bg-glow-spot -bottom-20 -right-20 pointer-events-none"></div>
@@ -217,8 +223,9 @@ export default function Login({ className, children }) {
 
                 {/* Brand Identity */}
                 <div className="flex flex-col items-center relative z-10">
-                  <div className="w-32 h-auto mb-6 transform hover:scale-105 transition-transform duration-300">
-                    <img alt="Logo RGAMES" className="w-full h-auto object-contain" src={logo} />
+                  <div className="relative w-32 h-auto mb-6 transform hover:scale-105 transition-transform duration-300">
+                    <div className="absolute inset-0 bg-primary/20 blur-xl rounded-full -z-10"></div>
+                    <img alt="Logo RGAMES" className="w-full h-auto object-contain drop-shadow-[0_0_18px_rgba(201,168,76,0.35)]" src={logo} />
                   </div>
                   <h2 className="font-headline-lg text-headline-lg text-on-surface tracking-tight text-center">
                     Bienvenido de nuevo

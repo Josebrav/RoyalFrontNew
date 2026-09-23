@@ -6,7 +6,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import { promo1millon, getUserByEmail } from "../../redux/actions";
 import { validateNick, validateEmail, validatePassword } from "./validate";
-import logo from "../../assets/logo.png";
+import logo from "../../assets/LogoOficial.PNG";
 
 const RegistroForm = ({ className, children }) => {
     const navigate = useNavigate();
@@ -204,9 +204,16 @@ const RegistroForm = ({ className, children }) => {
                     onClick={toggleRegisterBox}
                 >
                     <main
-                        className="relative z-10 w-full max-w-[420px] bg-[#12121A] border border-[#1A1A26] rounded-xl overflow-hidden shadow-2xl transition-all duration-300 my-4 select-none"
+                        className="relative z-10 w-full max-w-[420px] border border-primary/15 rounded-xl overflow-hidden shadow-[0_25px_70px_-15px_rgba(0,0,0,0.65),0_0_50px_-12px_rgba(201,168,76,0.15)] transition-all duration-300 my-4 select-none"
+                        style={{ background: "linear-gradient(160deg, #1d1a26 0%, #131019 55%, #0b0a10 100%)" }}
                         onClick={(e) => e.stopPropagation()}
                     >
+                        {/* Filo dorado arriba + brillo sutil tipo vidrio */}
+                        <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-primary/60 to-transparent pointer-events-none z-10"></div>
+                        <div className="absolute inset-0 bg-gradient-to-br from-white/[0.04] via-transparent to-black/10 pointer-events-none"></div>
+                        <div className="bg-glow-spot -top-20 -left-20 pointer-events-none"></div>
+                        <div className="bg-glow-spot -bottom-20 -right-20 pointer-events-none"></div>
+
                         {/* Watermark Background */}
                         <div className="absolute inset-0 flex items-center justify-center z-0 overflow-hidden pointer-events-none select-none">
                             <div className="watermark-bg transform -rotate-12">RGAMES RGAMES</div>
@@ -223,7 +230,10 @@ const RegistroForm = ({ className, children }) => {
 
                         {/* Header */}
                         <div className="pt-6 px-6 flex flex-col items-center relative z-10">
-                            <img alt="Logo RGAMES" className="h-12 w-auto mb-3 object-contain" src={logo} />
+                            <div className="relative">
+                                <div className="absolute inset-0 bg-primary/20 blur-xl rounded-full -z-10"></div>
+                                <img alt="Logo RGAMES" className="h-12 w-auto mb-3 object-contain drop-shadow-[0_0_18px_rgba(201,168,76,0.35)]" src={logo} />
+                            </div>
                             <h1 className="font-headline-sm text-headline-sm text-on-surface tracking-tight">Crea tu cuenta</h1>
                             <p className="text-[12px] text-on-surface-variant mt-0.5">Únete a la mayor comunidad de jugadores, increibles premios te esperan</p>
                         </div>
