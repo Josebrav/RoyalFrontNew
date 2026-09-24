@@ -33,13 +33,14 @@ import AdminDeposits from './components/AdminPanel/Deposits/deposits';
 import AdminPrizes from './components/AdminPanel/Prizes/prizes';
 import AdminReferrals from './components/AdminPanel/Referrals/referrals';
 import BingoBots from './components/AdminPanel/BingoBots/bingoBots';
+import Trophies from './components/AdminPanel/Trophies/trophies';
 import ResetPassword from './components/ResetPassword/resetPassword';
 import ProtectedRoute from './components/ProtectedRoute/ProtectedRoute';
 import RequireAuth from './components/ProtectedRoute/RequireAuth';
 import PaymentSuccess from './components/PaymentStatus/PaymentSuccess';
 import PaymentFailure from './components/PaymentStatus/PaymentFailure';
 import PaymentPending from './components/PaymentStatus/PaymentPending';
-import Bazar from './components/Bazar/bazar';
+import Vestidor from './components/Vestidor/vestidor';
 import Friends from './components/Friends/friends';
 import Messages from './components/Messages/messages';
 import GameDetail from './components/Juegos/GameDetail/gameDetail';
@@ -93,7 +94,7 @@ function App() {
   }, [currentUser?.id, location.pathname]);
 
   // Chips, avatar, etc. can change from OUTSIDE this app's own Redux flow — the external
-  // games settle bets directly against the backend with no JWT, and the Bazar (avatar editor)
+  // games settle bets directly against the backend with no JWT, and the Vestidor (avatar editor)
   // is its own separate app — so this tab's cached currentUser silently goes stale. Re-fetching
   // on every route change (not on a timer) means you always see fresh data by the time you land
   // on a new page, without forcing a full page reload just to bust the client-side cache.
@@ -126,7 +127,7 @@ function App() {
           <Sidebar />
           <div
             className={`transition-all duration-300 flex flex-col flex-1 ${
-              currentUser?.id && !location.pathname.includes('/play') ? 'md:pl-16 lg:pl-56' : ''
+              currentUser?.id && !location.pathname.includes('/game') ? 'md:pl-16 lg:pl-56' : ''
             }`}
           >
           <Routes>
@@ -144,20 +145,21 @@ function App() {
             <Route path="/admin/prizes" element={<ProtectedRoute><AdminPrizes /></ProtectedRoute>} />
             <Route path="/admin/referrals" element={<ProtectedRoute><AdminReferrals /></ProtectedRoute>} />
             <Route path="/admin/bingo-bots" element={<ProtectedRoute><BingoBots /></ProtectedRoute>} />
+            <Route path="/admin/trophies" element={<ProtectedRoute><Trophies /></ProtectedRoute>} />
             <Route path="/noticias" element={<News />} />
             <Route path="/about" element={<AboutUs />} />
             <Route path="/terminos-y-condiciones" element={<TermsAndConditions />} />
             <Route path="/privacidad" element={<Privacidad />} />
             <Route path="/cumplimiento" element={<Cumplimiento />} />
             <Route path="/trabaja-con-nosotros" element={<Careers />} />
-            <Route path="/play/minas" element={<RequireAuth><Diamantes /></RequireAuth>} />
-            <Route path="/play/royaljoker" element={<RequireAuth><RoyalJoker /></RequireAuth>} />
-            <Route path="/play/royalpachinka" element={<RequireAuth><RoyalPachinka /></RequireAuth>} />
-            <Route path="/play/bingo" element={<RequireAuth><Bingo /></RequireAuth>} />
-            <Route path="/play/santawilds" element={<RequireAuth><SantaWilds /></RequireAuth>} />
-            <Route path="/play/royalslots" element={<RequireAuth><RoyalSlots /></RequireAuth>} />
-            <Route path="/play/sugarcalavera" element={<RequireAuth><SugarCalavera /></RequireAuth>} />
-            <Route path="/bazar" element={<Bazar />} />
+            <Route path="/game/minas" element={<RequireAuth><Diamantes /></RequireAuth>} />
+            <Route path="/game/royaljoker" element={<RequireAuth><RoyalJoker /></RequireAuth>} />
+            <Route path="/game/royalpachinka" element={<RequireAuth><RoyalPachinka /></RequireAuth>} />
+            <Route path="/game/bingo" element={<RequireAuth><Bingo /></RequireAuth>} />
+            <Route path="/game/santawilds" element={<RequireAuth><SantaWilds /></RequireAuth>} />
+            <Route path="/game/royalslots" element={<RequireAuth><RoyalSlots /></RequireAuth>} />
+            <Route path="/game/sugarcalavera" element={<RequireAuth><SugarCalavera /></RequireAuth>} />
+            <Route path="/vestidor" element={<Vestidor />} />
             <Route path="/amigos" element={<Friends />} />
             <Route path="/mensajes" element={<Messages />} />
             <Route path="/mensajes/:nick" element={<Messages />} />
@@ -170,7 +172,7 @@ function App() {
             <Route path="/mercadopago/failure" element={<PaymentFailure />} />
             <Route path="/mercadopago/pending" element={<PaymentPending />} />
           </Routes>
-          {!location.pathname.includes('/play') && <Footer />}
+          {!location.pathname.includes('/game') && <Footer />}
           </div>
         </div>
         {showWelcomeGift && currentUser?.id && createPortal(

@@ -208,9 +208,8 @@ const RegistroForm = ({ className, children }) => {
                         style={{ background: "linear-gradient(160deg, #1d1a26 0%, #131019 55%, #0b0a10 100%)" }}
                         onClick={(e) => e.stopPropagation()}
                     >
-                        {/* Filo dorado arriba + brillo sutil tipo vidrio */}
+                        {/* Filo dorado arriba */}
                         <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-primary/60 to-transparent pointer-events-none z-10"></div>
-                        <div className="absolute inset-0 bg-gradient-to-br from-white/[0.04] via-transparent to-black/10 pointer-events-none"></div>
                         <div className="bg-glow-spot -top-20 -left-20 pointer-events-none"></div>
                         <div className="bg-glow-spot -bottom-20 -right-20 pointer-events-none"></div>
 

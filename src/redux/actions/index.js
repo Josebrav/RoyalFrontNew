@@ -438,6 +438,30 @@ export const deleteBingoBot = (id) => async () => {
     return data;
 };
 
+// Trofeos de torneo — sin estado en Redux a propósito, mismo patrón que los bots de arriba: la
+// página admin y el perfil los guardan en useState propio.
+export const fetchUserTrophies = (userId) => async () => {
+    const { data } = await axios.get(`${API_URL}/trophies/user/${userId}`);
+    return data;
+};
+
+export const fetchAllTrophies = () => async () => {
+    const { data } = await axios.get(`${API_URL}/trophies`);
+    return data;
+};
+
+export const createTrophy = (formData) => async () => {
+    const { data } = await axios.post(`${API_URL}/trophies`, formData, {
+        headers: { "Content-Type": "multipart/form-data" },
+    });
+    return data;
+};
+
+export const deleteTrophy = (id) => async () => {
+    const { data } = await axios.delete(`${API_URL}/trophies/${id}`);
+    return data;
+};
+
 export const setUserRole = (userId, role) => async () => {
     await axios.put(`${API_URL}/admin`, { userId, role });
 };

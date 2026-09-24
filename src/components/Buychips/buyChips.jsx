@@ -45,6 +45,18 @@ const chipOptions = [
   { id: 8, basePrice: 1000, amount: 2600000000, image: veinticeisb },
 ];
 
+// Mismos tipos que puede devolver ChipsService.getHistory (backend) — usado tanto para las
+// opciones del filtro como (junto con el signo de item.chips) para el ícono/color de cada fila.
+const HISTORY_TYPE_LABELS = {
+  deposit: "Depósito",
+  welcome: "Bono de Bienvenida",
+  admin_adjustment: "Ajuste Administrativo",
+  referral: "Bono de Referido",
+  prize: "Premio",
+  gift_sent: "Regalo Enviado",
+  gift_received: "Regalo Recibido",
+};
+
 export default function BuyChips() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -65,12 +77,10 @@ export default function BuyChips() {
   // Active payment method: "paypal", "mercadopago", "visa", "crypto"
   const [paymentMethod, setPaymentMethod] = useState("paypal");
 
-  // Selected bonus state
-  const [selectedBonus, setSelectedBonus] = useState("welcome");
-
   // Real payment history from database
   const [paymentHistory, setPaymentHistory] = useState([]);
   const [loadingHistory, setLoadingHistory] = useState(false);
+  const [historyTypeFilter, setHistoryTypeFilter] = useState("all");
 
   // Simulated credit card form state
   const [ccNumber, setCcNumber] = useState("");
@@ -117,6 +127,9 @@ export default function BuyChips() {
     };
     fetchHistory();
   }, [activeTab, currentUser]);
+
+  const filteredHistory =
+    historyTypeFilter === "all" ? paymentHistory : paymentHistory.filter((item) => item.type === historyTypeFilter);
 
   // country selection removed — country must be set in user profile
   const handleCountryChange = (e) => {
@@ -302,7 +315,7 @@ export default function BuyChips() {
             Billetera Royal
           </h1>
           <p className="font-body-md text-body-md text-on-surface-variant">
-            Administra tus fondos, adquiere fichas del casino de élite y gestiona tus transacciones seguras.
+            Administra tus fondos, adquiere fichas y gestiona tus transacciones seguras.
           </p>
         </header>
 
@@ -539,16 +552,7 @@ export default function BuyChips() {
                           <span className="text-on-surface-variant">Moneda / Divisa</span>
                           <span className="text-primary font-bold">{currency}</span>
                         </div>
-                        <div className="flex justify-between items-center text-sm border-b border-outline-variant/10 pb-4">
-                          <span className="text-on-surface-variant">Bono Adicional</span>
-                          <span className="text-green-400 font-bold">
-                            {selectedBonus === "welcome" && "+100% de Recarga"}
-                            {selectedBonus === "crypto" && "+10% Bono Cripto"}
-                            {selectedBonus === "weekly" && "+25 Giros Gratis"}
-                            {selectedBonus === "none" && "Ninguno"}
-                          </span>
-                        </div>
-                        <div className="flex justify-between items-end pt-2">
+                        <div className="flex justify-between items-end pt-2 border-t border-outline-variant/10">
                           <span className="font-label-lg text-label-lg text-white">Total a Pagar:</span>
                           <span className="font-headline-lg text-headline-lg text-primary">
                             {symbol} {selectedChip ? new Intl.NumberFormat('es-ES').format((selectedChip.basePrice * exchangeRate).toFixed(2)) : "0.00"}
@@ -556,27 +560,6 @@ export default function BuyChips() {
                         </div>
                       </div>
 
-                      {/* Available Bonuses Selector */}
-                      <div className="space-y-2">
-                        <label className="font-label-md text-label-md text-on-surface-variant block uppercase tracking-wider">
-                          Bonos Disponibles
-                        </label>
-                        <div className="relative">
-                          <select
-                            value={selectedBonus}
-                            onChange={(e) => setSelectedBonus(e.target.value)}
-                            className="w-full bg-[#0A0A0F] border border-outline-variant/30 rounded-xl py-3 px-4 text-sm text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all cursor-pointer appearance-none"
-                          >
-                            <option value="none">Sin Bono (Continuar sin bono)</option>
-                            <option value="welcome">100% de Recarga (Hasta $500)</option>
-                            <option value="crypto">10% de Reembolso Cripto</option>
-                            <option value="weekly">Guerrero del Fin de Semana (25 Giros Gratis)</option>
-                          </select>
-                          <div className="absolute inset-y-0 right-4 flex items-center pointer-events-none text-primary">
-                            <span className="material-symbols-outlined text-sm">expand_more</span>
-                          </div>
-                        </div>
-                      </div>
                     </div>
 
                     {/* GATEWAYS ACTIVE REGION */}
@@ -789,10 +772,22 @@ export default function BuyChips() {
             {activeTab === "history" && (
               <div className="space-y-6">
                 
-                <div className="flex justify-between items-center text-left">
+                <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4 text-left">
                   <div>
                     <h3 className="font-headline-sm text-headline-sm text-white mb-1">Registro de Auditoría Financiera</h3>
                     <p className="text-body-sm text-on-surface-variant">Tus últimos depósitos y movimientos de fichas en el casino.</p>
+                  </div>
+                  <div className="sm:w-56">
+                    <select
+                      value={historyTypeFilter}
+                      onChange={(e) => setHistoryTypeFilter(e.target.value)}
+                      className="w-full bg-surface-container-high border border-outline-variant/30 rounded-xl px-4 py-2.5 text-body-sm focus:border-primary outline-none appearance-none text-on-surface"
+                    >
+                      <option value="all">Todos los movimientos</option>
+                      {Object.entries(HISTORY_TYPE_LABELS).map(([value, label]) => (
+                        <option key={value} value={value}>{label}</option>
+                      ))}
+                    </select>
                   </div>
                 </div>
 
@@ -803,7 +798,7 @@ export default function BuyChips() {
                         <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
                         <span className="text-sm text-on-surface-variant">Cargando transacciones reales...</span>
                       </div>
-                    ) : paymentHistory.length > 0 ? (
+                    ) : filteredHistory.length > 0 ? (
                       <table className="w-full text-left border-collapse">
                         <thead>
                           <tr className="bg-surface-variant/20 border-b border-outline-variant/10">
@@ -815,28 +810,27 @@ export default function BuyChips() {
                           </tr>
                         </thead>
                         <tbody className="divide-y divide-outline-variant/10 text-sm">
-                          {paymentHistory.map((item) => {
+                          {filteredHistory.map((item) => {
                             // Fallback al final a propósito: ChipsService.getHistory puede devolver tipos que
                             // no estén listados acá todavía (nuevos `source` de ChipsAward) - sin esto, un tipo
                             // no contemplado tira "Cannot read properties of undefined (reading 'color')" y
                             // rompe toda la tabla en vez de solo esa fila.
                             const typeMeta = {
-                              deposit: { icon: "south_west", color: "text-green-400", label: "Depósito" },
-                              welcome: { icon: "redeem", color: "text-primary", label: "Bono de Bienvenida" },
+                              deposit: { icon: "south_west", color: "text-green-400" },
+                              welcome: { icon: "redeem", color: "text-primary" },
                               admin_adjustment: {
                                 icon: item.chips >= 0 ? "add_circle" : "remove_circle",
                                 color: item.chips >= 0 ? "text-green-400" : "text-error",
-                                label: "Ajuste Administrativo",
                               },
-                              referral: { icon: "diversity_3", color: "text-primary", label: "Bono de Referido" },
-                              prize: { icon: "emoji_events", color: "text-primary", label: "Premio" },
-                              gift_sent: { icon: "card_giftcard", color: "text-error", label: "Regalo Enviado" },
-                              gift_received: { icon: "card_giftcard", color: "text-green-400", label: "Regalo Recibido" },
+                              referral: { icon: "diversity_3", color: "text-primary" },
+                              prize: { icon: "emoji_events", color: "text-primary" },
+                              gift_sent: { icon: "card_giftcard", color: "text-error" },
+                              gift_received: { icon: "card_giftcard", color: "text-green-400" },
                             }[item.type] || {
                               icon: item.chips >= 0 ? "add_circle" : "remove_circle",
                               color: item.chips >= 0 ? "text-green-400" : "text-error",
-                              label: "Movimiento",
                             };
+                            const typeLabel = HISTORY_TYPE_LABELS[item.type] || "Movimiento";
 
                             const statusMeta = {
                               approved: { label: "Completado", className: "bg-green-500/10 text-green-400" },
@@ -857,7 +851,7 @@ export default function BuyChips() {
                                 <td className="px-6 py-4">
                                   <div className={`flex items-center gap-2 ${typeMeta.color}`}>
                                     <span className="material-symbols-outlined text-sm">{typeMeta.icon}</span>
-                                    <span className="font-bold">{typeMeta.label}</span>
+                                    <span className="font-bold">{typeLabel}</span>
                                   </div>
                                 </td>
                                 <td className="px-6 py-4 text-on-surface-variant">
@@ -890,8 +884,25 @@ export default function BuyChips() {
                     ) : (
                       <div className="p-12 text-center text-on-surface-variant bg-[#12121A]">
                         <span className="material-symbols-outlined text-[48px] text-outline mb-2">history</span>
-                        <p className="font-body-md text-body-md">No tienes transacciones registradas aún.</p>
-                        <p className="text-xs text-outline mt-1">Los depósitos aprobados se mostrarán en esta lista en tiempo real.</p>
+                        {paymentHistory.length === 0 ? (
+                          <>
+                            <p className="font-body-md text-body-md">No tienes transacciones registradas aún.</p>
+                            <p className="text-xs text-outline mt-1">Los depósitos aprobados se mostrarán en esta lista en tiempo real.</p>
+                          </>
+                        ) : (
+                          <>
+                            <p className="font-body-md text-body-md">
+                              No tenés movimientos de tipo "{HISTORY_TYPE_LABELS[historyTypeFilter] || historyTypeFilter}".
+                            </p>
+                            <button
+                              type="button"
+                              onClick={() => setHistoryTypeFilter("all")}
+                              className="text-xs text-primary hover:underline mt-1 bg-transparent border-0 cursor-pointer p-0"
+                            >
+                              Ver todos los movimientos
+                            </button>
+                          </>
+                        )}
                       </div>
                     )}
                   </div>

@@ -2,15 +2,18 @@ import { useSelector } from "react-redux";
 import { Box, Spinner, Center } from "@chakra-ui/react";
 import { tokenStore } from "../../api/tokenStore";
 
-const Bazar = () => {
+const Vestidor = () => {
   const currentUser = useSelector((state) => state.currentUser);
   const jugadorID = currentUser?.id || "default-id";
   // El access token vive en memoria (tokenStore), no en localStorage — ver Tarea 10.
-  // TODO: si en algún momento se puede actualizar la app de Bazar (S3, fuera de este
-  // repo), migrar esto a un token corto scopeado vía POST /bazar/session-token, igual
+  // TODO: si en algún momento se puede actualizar la app del Vestidor (S3, fuera de este
+  // repo), migrar esto a un token corto scopeado vía POST /vestidor/session-token, igual
   // que hace Diamantes/Minas con /games/mines/session-token.
   const token = tokenStore.get() || "";
-  const bazarURL = `https://baazaar.s3.us-east-2.amazonaws.com/bazar/index.html?jugadorID=${jugadorID}&token=${encodeURIComponent(token)}`;
+  // La URL de S3 sigue apuntando al bucket/carpeta "bazar": es el build de Unity ya
+  // desplegado ahí, renombrar esto rompería el juego hasta que se suba a una ruta nueva.
+  // No es visible para el usuario (va dentro de un iframe, no en la barra de direcciones).
+  const vestidorURL = `https://baazaar.s3.us-east-2.amazonaws.com/bazar/index.html?jugadorID=${jugadorID}&token=${encodeURIComponent(token)}`;
 
   return (
     <Box
@@ -31,8 +34,8 @@ const Bazar = () => {
           overflow="hidden"
         >
           <iframe
-            src={bazarURL}
-            title="Bazar"
+            src={vestidorURL}
+            title="Vestidor"
             style={{
               width: "100%",
               height: "100%",
@@ -50,4 +53,4 @@ const Bazar = () => {
   );
 };
 
-export default Bazar;
+export default Vestidor;

@@ -49,13 +49,13 @@ export default function Navbar() {
   // "pegado abajo" del lienzo asumiendo que la captura es solo de pecho para arriba — desde que
   // la cámara captura el cuerpo completo, eso ancla el cuadrado en las piernas, no en la cabeza.
   // Volver a activar avatar-thumbnail recién cuando ExtractTopSquareThumbnail esté arreglado
-  // (ver SaveAvatarButton.cs) Y cada usuario haya vuelto a guardar su avatar en el Bazar.
+  // (ver SaveAvatarButton.cs) Y cada usuario haya vuelto a guardar su avatar en el Vestidor.
   const avatarSrc = currentUser?.id
     ? `${API_URL}/user/${currentUser.id}/avatar-image?v=${currentUser.lastSeen ? new Date(currentUser.lastSeen).getTime() : 0}`
     : "https://lh3.googleusercontent.com/aida-public/AB6AXuCpCcNDDLhupT0iOwy1efwVKGf6ATUKCy6U7q50kyjk86DZ0ESSWDYB3IrG_VbQ2nLajCDmLvXOct59w89ERq7kJydta4x2rtj18hF3ffoEPNHFxRiAJHXOp4-joRLAss2GIpXRWXEpfCcn17eLUjcdKtMQDo4p-lNCzppHIIyPmM_WXToorkNt3NbXKLAfPkWDm4ln0gxkOhUv8fxWHOTdBFnPxsnTABAi2RPFBg9hCCwRzQGJ6YIBJ6Bvk8_pA9vPVUZpUJk60PQ";
 
   return (
-    <header className={`sticky top-0 z-50 bg-surface-container/90 backdrop-blur-md border-b border-outline-variant/30 shadow-sm h-20 transition-all duration-300 pt-1` }>
+    <header className={`sticky top-0 z-50 bg-surface-container/90 backdrop-blur-md border-b border-outline-variant/30 shadow-sm h-20 flex items-center transition-all duration-300` }>
       <div className="grid grid-cols-[1fr_auto_1fr] items-center h-16 pl-0 pr-4 md:pr-margin-desktop w-full gap-2">
         {/* Left Section: Logo & Nav Links */}
         <div className="flex items-center gap-6 justify-self-start min-w-0">
@@ -165,7 +165,7 @@ export default function Navbar() {
             <div className="hidden sm:flex items-center gap-3 bg-surface-container-high border border-primary/20 rounded-full pl-1 pr-1 py-1 max-w-[18rem] h-16 hover:border-primary/40 transition-colors">
               <button
                 type="button"
-                onClick={() => navigate('/bazar')}
+                onClick={() => navigate('/vestidor')}
                 title="Cambiar avatar"
                 className="w-14 h-14 rounded-full overflow-hidden border-2 border-primary/60 flex-shrink-0 bg-surface-container-lowest transition-transform hover:scale-105 focus:outline-none cursor-pointer p-0"
               >

@@ -33,7 +33,7 @@ export const GAMES_CATALOG = [
     image: rjImage,
     icon: "mood",
     players: 1476,
-    playPath: "/play/royaljoker",
+    playPath: "/game/royaljoker",
     description:
       "Una tragamonedas con temática de comodines llena de multiplicadores y rondas especiales. Gira los rodillos y deja que el Joker reparta la suerte.",
   },
@@ -45,7 +45,7 @@ export const GAMES_CATALOG = [
     image: minasImage,
     icon: "grid_view",
     players: 3349,
-    playPath: "/play/minas",
+    playPath: "/game/minas",
     // Matches the pre-existing backend Game row so favorites saved before the catalog
     // rework aren't lost.
     favoriteId: "501ffe04-71e2-44c9-a06a-f97df1babd0a",
@@ -60,7 +60,7 @@ export const GAMES_CATALOG = [
     image: pachinkaImage,
     icon: "casino",
     players: 2004,
-    playPath: "/play/royalpachinka",
+    playPath: "/game/royalpachinka",
     favoriteId: "d9c2b8f0-7e6a-4c9a-9a2b-1f3e5a2b6c7d",
     description:
       "El clásico juego de pachinko con estilo Royal: deja caer la bola y observa cómo rebota entre los pines hasta encontrar tu multiplicador.",
@@ -72,7 +72,7 @@ export const GAMES_CATALOG = [
     status: "active",
     icon: "diamond",
     players: 1650,
-    playPath: "/play/royalslots",
+    playPath: "/game/royalslots",
     description:
       "La tragamonedas clásica de RoyalGames: rodillos cargados de símbolos dorados, multiplicadores y la chance de llevarte el premio mayor en cualquier giro.",
   },
@@ -83,7 +83,7 @@ export const GAMES_CATALOG = [
     status: "active",
     icon: "ac_unit",
     players: 1820,
-    playPath: "/play/santawilds",
+    playPath: "/game/santawilds",
     description:
       "Tragamonedas navideña con símbolos wild que se expanden y multiplican tus ganancias. Encontrá a Santa y desbloqueá rondas bonus llenas de regalos.",
   },
@@ -94,7 +94,7 @@ export const GAMES_CATALOG = [
     status: "active",
     icon: "cookie",
     players: 1290,
-    playPath: "/play/sugarcalavera",
+    playPath: "/game/sugarcalavera",
     description:
       "Tragamonedas con temática de calaveritas de azúcar: símbolos dulces, colores vibrantes y multiplicadores que celebran la buena suerte.",
   },
@@ -106,7 +106,7 @@ export const GAMES_CATALOG = [
     image: bingoImage,
     icon: "grid_on",
     players: 2210,
-    playPath: "/play/bingo",
+    playPath: "/game/bingo",
     description:
       "El bingo de toda la vida, ahora en salas en vivo con otros jugadores de RoyalGames. Canta línea, canta bingo y gana el pozo.",
   },

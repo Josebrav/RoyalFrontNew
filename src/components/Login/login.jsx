@@ -205,8 +205,6 @@ export default function Login({ className, children }) {
               >
                 {/* Filo dorado arriba, para que no se sienta como una caja plana */}
                 <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-primary/60 to-transparent pointer-events-none"></div>
-                {/* Brillo sutil tipo vidrio, más claro arriba-izquierda que abajo-derecha */}
-                <div className="absolute inset-0 bg-gradient-to-br from-white/[0.04] via-transparent to-black/10 pointer-events-none"></div>
 
                 {/* Atmospheric Background elements */}
                 <div className="bg-glow-spot -top-20 -left-20 pointer-events-none"></div>

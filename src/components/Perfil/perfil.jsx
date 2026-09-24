@@ -22,6 +22,7 @@ import {
   blockUser,
   unblockUser,
   giftChips,
+  fetchUserTrophies,
 } from "./../../redux/actions/index";
 import RankBadge from "../ui/RankBadge/rankBadge";
 import { getRankMeta, getNextRank } from "../../utils/rank";
@@ -110,6 +111,27 @@ const Perfil = ({ isPublic = false }) => {
       dispatch(fetchBlockStatus(viewedUser.id));
     }
   }, [dispatch, isPublic, viewedUser?.id, currentUser?.id]);
+
+  // Trofeos de torneo otorgados desde el panel admin (ver TrophiesModule) — se muestran al final
+  // del perfil, tanto en el propio como en el de otro jugador.
+  const [trophies, setTrophies] = useState([]);
+  useEffect(() => {
+    if (!user?.id) {
+      setTrophies([]);
+      return;
+    }
+    let cancelled = false;
+    dispatch(fetchUserTrophies(user.id))
+      .then((data) => {
+        if (!cancelled) setTrophies(data || []);
+      })
+      .catch(() => {
+        if (!cancelled) setTrophies([]);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [dispatch, user?.id]);
 
   // Cache-bust with lastSeen (refreshed on every navigation) so an avatar edit shows up right
   // away instead of the browser serving the old bytes forever from this unversioned URL.
@@ -375,7 +397,7 @@ const Perfil = ({ isPublic = false }) => {
   const rankMeta = getRankMeta(user.rank);
   const profileBanner = user.role === "admin" ? bannerPerfilDorado : user.role === "mod" ? bannerPerfilVerde : bannerPerfil;
   const roleInsignia = user.role === "admin" ? insigniaAdmin : user.role === "mod" ? insigniaMod : null;
-  // Female Bazar avatars are rendered taller/closer to the camera than male ones, so in the
+  // Female Vestidor avatars are rendered taller/closer to the camera than male ones, so in the
   // profile frame they need to be a touch smaller. We shrink from the TOP only (padding-top
   // on the square box) so the feet stay pinned to the same floor line (object-bottom) and it's
   // just the head that comes down. Male avatars are left exactly as-is.
@@ -592,7 +614,7 @@ const Perfil = ({ isPublic = false }) => {
                     { label: "Mis Amigos", icon: "group", to: "/amigos" },
                     { label: "Mis Mensajes", icon: "forum", to: "/mensajes" },
                     { label: "Comprar Fichas", icon: "paid", to: "/chips" },
-                    { label: "Cambiar Avatar", icon: "face_retouching_natural", to: "/bazar" },
+                    { label: "Cambiar Avatar", icon: "face_retouching_natural", to: "/vestidor" },
                     { label: "Ayuda", icon: "support_agent", to: "/ayuda" },
                     ...(user.role === "admin" || user.role === "mod"
                       ? [{ label: "Panel de Administración", icon: "admin_panel_settings", to: "/admin/dashboard" }]
@@ -780,6 +802,42 @@ const Perfil = ({ isPublic = false }) => {
           </div>
         )}
       </section>
+
+      {/* Trofeos de torneo — solo se muestra si hay alguno, o si es tu propio perfil (para que
+          sepas que existe el espacio aunque todavía no ganaste ninguno). Mismo criterio que la
+          bio de arriba. */}
+      {(trophies.length > 0 || isOwnProfile) && (
+        <section className="mb-10 text-left">
+          <h2 className="font-headline-sm text-headline-sm text-white mb-4 flex items-center gap-2">
+            <span className="material-symbols-outlined text-primary">military_tech</span>
+            Trofeos
+          </h2>
+          {trophies.length === 0 ? (
+            <div className="glass-card rounded-xl p-6 text-center">
+              <p className="text-on-surface-variant text-sm">
+                Todavía no ganaste ningún trofeo. Ganá un torneo y tu premio va a aparecer acá.
+              </p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
+              {trophies.map((trophy) => (
+                <div
+                  key={trophy.id}
+                  title={trophy.description || trophy.title}
+                  className="glass-card rounded-xl p-3 flex flex-col items-center gap-2 hover:border-primary/40 transition-colors border border-transparent"
+                >
+                  <img
+                    src={trophy.imageUrl}
+                    alt={trophy.title}
+                    className="w-full aspect-square object-contain"
+                  />
+                  <p className="text-xs font-bold text-white text-center leading-tight">{trophy.title}</p>
+                </div>
+              ))}
+            </div>
+          )}
+        </section>
+      )}
 
       {isSettingsOpen && isOwnProfile && (
         <div

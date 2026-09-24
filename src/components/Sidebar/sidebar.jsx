@@ -39,11 +39,12 @@ export default function Sidebar() {
     ...(currentUser?.role === "admin" ? [{ to: "/admin/deposits", icon: "payments", label: "Cargas" }] : []),
     { to: "/admin/prizes", icon: "emoji_events", label: "Premios" },
     { to: "/admin/referrals", icon: "diversity_3", label: "Referidos" },
+    { to: "/admin/trophies", icon: "military_tech", label: "Trofeos" },
     // Palanca de la economía de la casa — admin-only, igual que "Cargas" arriba.
     ...(currentUser?.role === "admin" ? [{ to: "/admin/bingo-bots", icon: "smart_toy", label: "Bots" }] : []),
   ];
 
-  if (!currentUser?.id || location.pathname.includes("/play")) {
+  if (!currentUser?.id || location.pathname.includes("/game")) {
     return null;
   }
 

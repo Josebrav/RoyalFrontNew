@@ -6,11 +6,25 @@ import API_URL from "../../api/rutaApi";
 import RankBadge from "../ui/RankBadge/rankBadge";
 import { fetchConversations, fetchThread, sendMessage } from "../../redux/actions/index";
 
-const POLL_INTERVAL_MS = 30000;
+// Mientras hay una conversación abierta se sondea seguido, para que el otro vea el mensaje sin
+// recargar la página en unos pocos segundos en vez de hasta 30s. Sin un hilo abierto (solo
+// mirando la lista de conversaciones) se vuelve al intervalo lento — no hay necesidad de pegarle
+// tan seguido al backend si no hay nada activo en pantalla.
+const ACTIVE_THREAD_POLL_MS = 3000;
+const IDLE_POLL_INTERVAL_MS = 30000;
+
+function formatMessageTimestamp(dateString) {
+  return new Date(dateString).toLocaleString("es-ES", {
+    day: "2-digit",
+    month: "short",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+}
 
 function Avatar({ userId, nick, size = "w-11 h-11" }) {
   // TEMPORAL: vuelto a avatar-image, ver nota en nav.jsx — el avatar-thumbnail actual ancla mal
-  // el recorte desde que la cámara del Bazar captura el cuerpo completo.
+  // el recorte desde que la cámara del Vestidor captura el cuerpo completo.
   const avatarSrc = userId ? `${API_URL}/user/${userId}/avatar-image` : null;
   const initials = (nick || "RG").slice(0, 2).toUpperCase();
   return (
@@ -85,15 +99,17 @@ export default function Messages() {
     refreshThread();
   }, [refreshThread]);
 
-  // Poll conversations + active thread periodically instead of a WebSocket connection.
+  // Poll conversations + active thread periodically instead of a WebSocket connection. Cadence
+  // speeds up while a thread is open (see constants above) so a reply shows up on its own.
   useEffect(() => {
     if (!currentUser?.id) return;
+    const intervalMs = activePartner?.id ? ACTIVE_THREAD_POLL_MS : IDLE_POLL_INTERVAL_MS;
     const interval = setInterval(() => {
       dispatch(fetchConversations());
       refreshThread();
-    }, POLL_INTERVAL_MS);
+    }, intervalMs);
     return () => clearInterval(interval);
-  }, [dispatch, currentUser?.id, refreshThread]);
+  }, [dispatch, currentUser?.id, refreshThread, activePartner?.id]);
 
   const activeMessages = activePartner?.id ? threads[activePartner.id] || [] : [];
 
@@ -202,18 +218,28 @@ export default function Messages() {
                     Todavía no hay mensajes. ¡Escribe el primero!
                   </p>
                 ) : (
-                  activeMessages.map((m) => (
-                    <div
-                      key={m.id}
-                      className={`max-w-[75%] px-4 py-2 rounded-2xl text-sm ${
-                        m.senderId === currentUser.id
-                          ? "ml-auto royal-gold-gradient text-surface-container-lowest rounded-br-sm"
-                          : "bg-surface-container-lowest text-on-surface rounded-bl-sm"
-                      }`}
-                    >
-                      {m.content}
-                    </div>
-                  ))
+                  activeMessages.map((m) => {
+                    const isMine = m.senderId === currentUser.id;
+                    return (
+                      <div
+                        key={m.id}
+                        className={`flex flex-col max-w-[75%] ${isMine ? "ml-auto items-end" : "items-start"}`}
+                      >
+                        <div
+                          className={`px-4 py-2 rounded-2xl text-sm ${
+                            isMine
+                              ? "royal-gold-gradient text-surface-container-lowest rounded-br-sm"
+                              : "bg-surface-container-lowest text-on-surface rounded-bl-sm"
+                          }`}
+                        >
+                          {m.content}
+                        </div>
+                        <span className="text-[10px] text-on-surface-variant/70 mt-1 px-1">
+                          {formatMessageTimestamp(m.createdAt)}
+                        </span>
+                      </div>
+                    );
+                  })
                 )}
               </div>
 

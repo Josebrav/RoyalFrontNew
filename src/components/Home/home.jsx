@@ -21,6 +21,7 @@ import BannerCarousel from "../ui/BannerCarousel";
 import { GAMES_CATALOG, CATEGORY_META, getGameByPlayPath, getGameBySlug } from "../../data/gamesCatalog";
 import { generateFakeOnlinePlayers } from "../../data/fakeOnlinePlayers";
 import API_URL from "../../api/rutaApi";
+import { useAuth } from "../../context/oauthContext";
 
 const SIMULATED_ONLINE_MIN = 18;
 const SIMULATED_ONLINE_MAX = 34;
@@ -30,6 +31,12 @@ export default function Home() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { currentUser } = useSelector((state) => state);
+  // Al recargar la página, restaurar la sesión (canjear la cookie httpOnly por un access token
+  // nuevo) es async — mientras tanto currentUser?.id todavía es falsy en Redux, así que sin este
+  // chequeo se alcanzaba a pintar la landing de invitado (con el botón de Iniciar Sesión) un
+  // instante antes de que la sesión real apareciera y recién ahí saltara al dashboard. auth.loading
+  // deja esperar ese instante en vez de comprometerse a una de las dos vistas de entrada.
+  const auth = useAuth();
   // "Entrar como Invitado": shows the same dashboard a logged-in user sees, but with no
   // account behind it — the nav still offers Iniciar Sesión / Registrarse.
   const isGuestPreview = !currentUser?.id && searchParams.get("vista") === "invitado";
@@ -413,6 +420,16 @@ export default function Home() {
 
   // --- RENDERING CONFIG ---
 
+  // Todavía no sabemos si hay sesión o no (ver comentario junto a `auth` arriba) — ni landing de
+  // invitado ni dashboard todavía, solo un loader, para no pasar de una pantalla a otra de golpe.
+  if (auth.loading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <div className="w-10 h-10 border-2 border-primary border-t-transparent rounded-full animate-spin"></div>
+      </div>
+    );
+  }
+
   // 1. Authenticated User Lobby Dashboard (also shown, with no account data, for the
   // "Entrar como Invitado" preview)
   if (currentUser?.id || isGuestPreview) {
@@ -579,10 +596,13 @@ export default function Home() {
             {/* Top Winners + Online Players */}
             <aside className="xl:col-span-4 flex flex-col gap-6 text-left">
               {/* Top Winners Leaderboard */}
-              <div className="bg-surface-container-high rounded-xl border border-primary/30 overflow-hidden flex flex-col gold-glow">
-                <div className="gold-gradient p-4 flex justify-between items-center">
-                  <h3 className="text-on-primary font-bold text-headline-sm font-headline-sm">Top Ganadores</h3>
-                  <span className="bg-black/20 text-on-primary px-2 py-1 rounded text-label-md font-label-md font-bold">EN VIVO</span>
+              <div
+                className="bg-surface-container-high rounded-xl border border-emerald-400/30 overflow-hidden flex flex-col"
+                style={{ boxShadow: "0 0 20px rgba(52, 211, 153, 0.15)" }}
+              >
+                <div className="bg-gradient-to-r from-emerald-500 to-teal-600 p-4 flex justify-between items-center">
+                  <h3 className="text-white font-bold text-headline-sm font-headline-sm">Top Ganadores</h3>
+                  <span className="bg-black/25 text-white px-2 py-1 rounded text-label-md font-label-md font-bold">EN VIVO</span>
                 </div>
                 <div className="p-6 space-y-3">
                   {topWinners.length === 0 ? (
@@ -593,21 +613,21 @@ export default function Home() {
                     topWinners.map((player, index) => (
                       <div
                         key={player.id}
-                        className={`flex items-center justify-between p-3 rounded ${index === 0 ? "bg-surface border-l-4 border-primary" : "bg-surface/50"}`}
+                        className={`flex items-center justify-between p-3 rounded ${index === 0 ? "bg-surface border-l-4 border-emerald-400" : "bg-surface/50"}`}
                       >
                         <div className="flex items-center gap-3 min-w-0">
-                          <span className={`font-bold flex-shrink-0 ${index === 0 ? "text-primary" : "text-on-surface-variant"}`}>
+                          <span className={`font-bold flex-shrink-0 ${index === 0 ? "text-emerald-400" : "text-on-surface-variant"}`}>
                             {index + 1}
                           </span>
                           <button
                             type="button"
                             onClick={() => navigate(`/perfil/${player.nick}`)}
-                            className="font-bold text-white truncate hover:text-primary hover:underline cursor-pointer bg-transparent border-0 p-0 text-left"
+                            className="font-bold text-white truncate hover:text-emerald-400 hover:underline cursor-pointer bg-transparent border-0 p-0 text-left"
                           >
                             {player.nick}
                           </button>
                         </div>
-                        <span className={`font-bold flex-shrink-0 ${index === 0 ? "text-primary" : "text-on-surface-variant"}`}>
+                        <span className={`font-bold flex-shrink-0 ${index === 0 ? "text-emerald-400" : "text-on-surface-variant"}`}>
                           {new Intl.NumberFormat('es-ES').format(player.totalWon)}
                         </span>
                       </div>
@@ -617,7 +637,7 @@ export default function Home() {
               </div>
 
               {/* Online Players */}
-              <div className="bg-surface-container-high rounded-xl border border-outline-variant/20 overflow-hidden flex flex-col">
+              <div className="bg-surface-container-high rounded-xl border border-sky-400/20 overflow-hidden flex flex-col">
                 <div className="p-4 border-b border-outline-variant/10 flex items-center gap-2">
                   <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse flex-shrink-0"></span>
                   <h3 className="font-bold text-headline-sm font-headline-sm text-white">
@@ -643,22 +663,22 @@ export default function Home() {
                             onClick={() => isRealPlayer && navigate(`/perfil/${player.nick}`)}
                             className={`flex items-center gap-3 min-w-0 bg-transparent border-0 p-0 text-left ${isRealPlayer ? "cursor-pointer group" : "cursor-default"}`}
                           >
-                            <div className="w-9 h-9 rounded-full royal-gold-gradient flex items-center justify-center text-surface-container-lowest font-bold text-xs flex-shrink-0">
+                            <div className="w-9 h-9 rounded-full bg-gradient-to-br from-sky-400 to-blue-600 flex items-center justify-center text-white font-bold text-xs flex-shrink-0">
                               {(player.nick || "RG").slice(0, 2).toUpperCase()}
                             </div>
                             <div className="min-w-0">
-                              <p className={`font-bold text-white text-sm truncate ${isRealPlayer ? "group-hover:text-primary group-hover:underline" : ""}`}>
+                              <p className={`font-bold text-white text-sm truncate ${isRealPlayer ? "group-hover:text-sky-400 group-hover:underline" : ""}`}>
                                 {player.nick}
                               </p>
                               <p className="text-[11px] text-on-surface-variant truncate">
-                                {activeGame ? <span className="text-primary">Jugando a {activeGame.name}</span> : "En el sitio"}
+                                {activeGame ? <span className="text-sky-400">Jugando a {activeGame.name}</span> : "En el sitio"}
                               </p>
                             </div>
                           </button>
                           {activeGame && (
                             <button
                               onClick={() => handlePlayGame(activeGame.playPath, activeGame.name)}
-                              className="px-3 py-1.5 rounded gold-gradient text-black text-[11px] font-bold uppercase flex-shrink-0 cursor-pointer border-0"
+                              className="px-3 py-1.5 rounded bg-gradient-to-r from-sky-500 to-blue-600 text-white text-[11px] font-bold uppercase flex-shrink-0 cursor-pointer border-0 hover:brightness-110 transition-all"
                             >
                               Jugar
                             </button>

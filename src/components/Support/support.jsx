@@ -17,6 +17,22 @@ const SENDER_META = {
   system: { align: "bg-surface-container-lowest text-on-surface-variant italic rounded-bl-sm", label: null },
 };
 
+// Mientras hay un ticket abierto se sondea seguido, para que una respuesta de soporte aparezca
+// sola sin que el jugador tenga que recargar la página mientras espera. La lista de tickets (para
+// que los badges de estado — Abierto/Respondido/Cerrado — se mantengan al día) se sondea siempre
+// que haya sesión, a un ritmo más lento.
+const ACTIVE_TICKET_POLL_MS = 5000;
+const TICKET_LIST_POLL_MS = 20000;
+
+function formatMessageTimestamp(dateString) {
+  return new Date(dateString).toLocaleString("es-ES", {
+    day: "2-digit",
+    month: "short",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+}
+
 export default function Support() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -41,11 +57,27 @@ export default function Support() {
     }
   }, [dispatch, currentUser?.id]);
 
+  // Sondea la lista de tickets en segundo plano, para que los badges de estado (Abierto/
+  // Respondido/Cerrado) se actualicen solos sin recargar la página.
+  useEffect(() => {
+    if (!currentUser?.id) return;
+    const interval = setInterval(() => dispatch(fetchMyTickets()), TICKET_LIST_POLL_MS);
+    return () => clearInterval(interval);
+  }, [dispatch, currentUser?.id]);
+
   useEffect(() => {
     if (ticketId) {
       setIsCreating(false);
       dispatch(fetchTicketDetail(ticketId));
     }
+  }, [dispatch, ticketId]);
+
+  // Sondea el ticket abierto seguido, para que una respuesta de soporte aparezca sola mientras el
+  // jugador espera en la pantalla, sin que tenga que recargar.
+  useEffect(() => {
+    if (!ticketId) return;
+    const interval = setInterval(() => dispatch(fetchTicketDetail(ticketId)), ACTIVE_TICKET_POLL_MS);
+    return () => clearInterval(interval);
   }, [dispatch, ticketId]);
 
   const handleGuestSubmit = async (e) => {
@@ -88,8 +120,12 @@ export default function Support() {
     return (
       <main className="w-full max-w-lg mx-auto p-6 md:p-8 my-16 pt-20 md:pt-24">
         <h1 className="font-headline-lg text-headline-lg text-white mb-2">Ayuda</h1>
-        <p className="text-on-surface-variant text-sm mb-6">
+        <p className="text-on-surface-variant text-sm mb-2">
           No tenés cuenta todavía, no hay problema: dejanos tu consulta y un correo de contacto, te respondemos ahí mismo.
+        </p>
+        <p className="text-primary text-xs font-bold uppercase tracking-wider mb-6 flex items-center gap-1.5">
+          <span className="material-symbols-outlined text-[14px]">bolt</span>
+          Tiempo aproximado de respuesta: Inmediatamente
         </p>
         <form onSubmit={handleGuestSubmit} className="glass-card rounded-xl p-6 space-y-4">
           <div className="space-y-2">
@@ -180,8 +216,12 @@ export default function Support() {
   return (
     <main className="flex-grow max-w-container-max mx-auto w-full select-none text-on-surface min-h-[85vh] pt-20 md:pt-24 px-4 md:px-margin-desktop pb-8">
       <h1 className="font-headline-lg text-headline-lg text-white mb-2">Ayuda</h1>
-      <p className="text-on-surface-variant text-sm mb-6">
+      <p className="text-on-surface-variant text-sm mb-2">
         Abrí un ticket para cualquier consulta y nuestro equipo te va a responder acá mismo.
+      </p>
+      <p className="text-primary text-xs font-bold uppercase tracking-wider mb-6 flex items-center gap-1.5">
+        <span className="material-symbols-outlined text-[14px]">bolt</span>
+        Tiempo aproximado de respuesta: Inmediatamente
       </p>
 
       <div className="glass-card rounded-xl overflow-hidden grid grid-cols-1 md:grid-cols-[320px_1fr] min-h-[70vh]">
@@ -281,14 +321,22 @@ export default function Support() {
               </div>
 
               <div className="flex-1 overflow-y-auto p-4 space-y-3">
-                {ticketDetail.messages.map((m) => (
-                  <div key={m.id} className={`max-w-[75%] px-4 py-2 rounded-2xl text-sm ${SENDER_META[m.senderRole].align}`}>
-                    {SENDER_META[m.senderRole].label && (
-                      <p className="text-[10px] font-bold uppercase tracking-wider text-primary mb-1">{SENDER_META[m.senderRole].label}</p>
-                    )}
-                    {m.content}
-                  </div>
-                ))}
+                {ticketDetail.messages.map((m) => {
+                  const isMine = m.senderRole === "user";
+                  return (
+                    <div key={m.id} className={`flex flex-col max-w-[75%] ${isMine ? "ml-auto items-end" : "items-start"}`}>
+                      <div className={`px-4 py-2 rounded-2xl text-sm ${SENDER_META[m.senderRole].align}`}>
+                        {SENDER_META[m.senderRole].label && (
+                          <p className="text-[10px] font-bold uppercase tracking-wider text-primary mb-1">{SENDER_META[m.senderRole].label}</p>
+                        )}
+                        {m.content}
+                      </div>
+                      <span className="text-[10px] text-on-surface-variant/70 mt-1 px-1">
+                        {formatMessageTimestamp(m.createdAt)}
+                      </span>
+                    </div>
+                  );
+                })}
               </div>
 
               <form onSubmit={handleReply} className="flex items-center gap-3 p-4 border-t border-outline-variant/10">
