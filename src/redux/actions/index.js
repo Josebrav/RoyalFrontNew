@@ -401,6 +401,33 @@ export const removeUserChips = (userId, amount) => async () => {
     await axios.put(`${API_URL}/remove/chips`, { userId, amount });
 };
 
+// Bots de Bingo (panel admin) — sin estado en Redux a propósito, la página los guarda en
+// useState propio (mismo patrón que addUserChips/removeUserChips de arriba).
+export const fetchBingoBots = () => async () => {
+    const { data } = await axios.get(`${API_URL}/admin/bingo-bots`);
+    return data;
+};
+
+export const fetchBingoBotRooms = () => async () => {
+    const { data } = await axios.get(`${API_URL}/admin/bingo-bots/rooms`);
+    return data;
+};
+
+export const createBingoBot = (payload) => async () => {
+    const { data } = await axios.post(`${API_URL}/admin/bingo-bots`, payload);
+    return data;
+};
+
+export const updateBingoBot = (id, payload) => async () => {
+    const { data } = await axios.patch(`${API_URL}/admin/bingo-bots/${id}`, payload);
+    return data;
+};
+
+export const deleteBingoBot = (id) => async () => {
+    const { data } = await axios.delete(`${API_URL}/admin/bingo-bots/${id}`);
+    return data;
+};
+
 export const setUserRole = (userId, role) => async () => {
     await axios.put(`${API_URL}/admin`, { userId, role });
 };

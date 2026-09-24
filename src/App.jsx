@@ -32,6 +32,7 @@ import SupportTicketsAdmin from './components/AdminPanel/SupportTickets/supportT
 import AdminDeposits from './components/AdminPanel/Deposits/deposits';
 import AdminPrizes from './components/AdminPanel/Prizes/prizes';
 import AdminReferrals from './components/AdminPanel/Referrals/referrals';
+import BingoBots from './components/AdminPanel/BingoBots/bingoBots';
 import ResetPassword from './components/ResetPassword/resetPassword';
 import ProtectedRoute from './components/ProtectedRoute/ProtectedRoute';
 import RequireAuth from './components/ProtectedRoute/RequireAuth';
@@ -142,6 +143,7 @@ function App() {
             <Route path="/admin/deposits" element={<ProtectedRoute><AdminDeposits /></ProtectedRoute>} />
             <Route path="/admin/prizes" element={<ProtectedRoute><AdminPrizes /></ProtectedRoute>} />
             <Route path="/admin/referrals" element={<ProtectedRoute><AdminReferrals /></ProtectedRoute>} />
+            <Route path="/admin/bingo-bots" element={<ProtectedRoute><BingoBots /></ProtectedRoute>} />
             <Route path="/noticias" element={<News />} />
             <Route path="/about" element={<AboutUs />} />
             <Route path="/terminos-y-condiciones" element={<TermsAndConditions />} />
