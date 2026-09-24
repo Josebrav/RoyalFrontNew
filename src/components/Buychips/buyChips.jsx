@@ -816,6 +816,10 @@ export default function BuyChips() {
                         </thead>
                         <tbody className="divide-y divide-outline-variant/10 text-sm">
                           {paymentHistory.map((item) => {
+                            // Fallback al final a propósito: ChipsService.getHistory puede devolver tipos que
+                            // no estén listados acá todavía (nuevos `source` de ChipsAward) - sin esto, un tipo
+                            // no contemplado tira "Cannot read properties of undefined (reading 'color')" y
+                            // rompe toda la tabla en vez de solo esa fila.
                             const typeMeta = {
                               deposit: { icon: "south_west", color: "text-green-400", label: "Depósito" },
                               welcome: { icon: "redeem", color: "text-primary", label: "Bono de Bienvenida" },
@@ -824,7 +828,15 @@ export default function BuyChips() {
                                 color: item.chips >= 0 ? "text-green-400" : "text-error",
                                 label: "Ajuste Administrativo",
                               },
-                            }[item.type];
+                              referral: { icon: "diversity_3", color: "text-primary", label: "Bono de Referido" },
+                              prize: { icon: "emoji_events", color: "text-primary", label: "Premio" },
+                              gift_sent: { icon: "card_giftcard", color: "text-error", label: "Regalo Enviado" },
+                              gift_received: { icon: "card_giftcard", color: "text-green-400", label: "Regalo Recibido" },
+                            }[item.type] || {
+                              icon: item.chips >= 0 ? "add_circle" : "remove_circle",
+                              color: item.chips >= 0 ? "text-green-400" : "text-error",
+                              label: "Movimiento",
+                            };
 
                             const statusMeta = {
                               approved: { label: "Completado", className: "bg-green-500/10 text-green-400" },
