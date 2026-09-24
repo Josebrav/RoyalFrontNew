@@ -55,7 +55,7 @@ export default function Navbar() {
     : "https://lh3.googleusercontent.com/aida-public/AB6AXuCpCcNDDLhupT0iOwy1efwVKGf6ATUKCy6U7q50kyjk86DZ0ESSWDYB3IrG_VbQ2nLajCDmLvXOct59w89ERq7kJydta4x2rtj18hF3ffoEPNHFxRiAJHXOp4-joRLAss2GIpXRWXEpfCcn17eLUjcdKtMQDo4p-lNCzppHIIyPmM_WXToorkNt3NbXKLAfPkWDm4ln0gxkOhUv8fxWHOTdBFnPxsnTABAi2RPFBg9hCCwRzQGJ6YIBJ6Bvk8_pA9vPVUZpUJk60PQ";
 
   return (
-    <header className={`sticky top-0 z-50 bg-gradient-to-r from-emerald-500 to-teal-600 border-b border-black/20 shadow-sm h-20 flex items-center transition-all duration-300` }>
+    <header className={`sticky top-0 z-50 bg-gradient-to-r from-amber-600 to-yellow-500 border-b border-black/20 shadow-sm h-20 flex items-center transition-all duration-300` }>
       <div className="grid grid-cols-[1fr_auto_1fr] items-center h-16 pl-0 pr-4 md:pr-margin-desktop w-full gap-2">
         {/* Left Section: Logo & Nav Links */}
         <div className="flex items-center gap-6 justify-self-start min-w-0">
