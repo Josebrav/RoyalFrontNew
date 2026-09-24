@@ -546,7 +546,7 @@ export default function Home() {
                       />
                     </div>
                     <div className="p-3 text-left">
-                      <span className={`text-[10px] font-bold uppercase tracking-wider ${CATEGORY_META[game.category].className}`}>
+                      <span className={`inline-block text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full mb-1.5 ${CATEGORY_META[game.category].chipClassName}`}>
                         {CATEGORY_META[game.category].label}
                       </span>
                       <h4 className="font-bold text-label-lg font-label-lg truncate text-white">{game.name}</h4>

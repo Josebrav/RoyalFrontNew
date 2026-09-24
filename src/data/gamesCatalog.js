@@ -4,12 +4,16 @@ import pachinkaImage from "../assets/rpachinka2.png";
 import bingoImage from "../assets/bingoproxi.png";
 import ruletaImage from "../assets/ruleta.png";
 
+// `chipClassName` es la misma paleta pero como píldora (fondo + borde translúcidos), para donde
+// la categoría necesita notarse de un vistazo (ej. la grilla de "Juegos Populares" del Home) en
+// vez de un simple texto de color — `className` (solo texto) sigue igual para no tocar los demás
+// usos ya existentes (GamesCatalog, GameDetail, etc.).
 export const CATEGORY_META = {
-  bingo: { label: "Bingo", className: "text-[#c9a84c]" },
-  casino: { label: "Casino", className: "text-[#e05252]" },
-  cartas: { label: "Cartas", className: "text-[#4f8fe0]" },
-  otros: { label: "Otros", className: "text-[#4caf7d]" },
-  slots: { label: "Slots", className: "text-[#a855f7]" },
+  bingo: { label: "Bingo", className: "text-[#c9a84c]", chipClassName: "bg-[#c9a84c]/15 text-[#c9a84c] border border-[#c9a84c]/40" },
+  casino: { label: "Casino", className: "text-[#e05252]", chipClassName: "bg-[#e05252]/15 text-[#e05252] border border-[#e05252]/40" },
+  cartas: { label: "Cartas", className: "text-[#4f8fe0]", chipClassName: "bg-[#4f8fe0]/15 text-[#4f8fe0] border border-[#4f8fe0]/40" },
+  otros: { label: "Otros", className: "text-[#4caf7d]", chipClassName: "bg-[#4caf7d]/15 text-[#4caf7d] border border-[#4caf7d]/40" },
+  slots: { label: "Slots", className: "text-[#a855f7]", chipClassName: "bg-[#a855f7]/15 text-[#a855f7] border border-[#a855f7]/40" },
 };
 
 export const CATEGORY_ORDER = ["bingo", "casino", "cartas", "otros", "slots"];

@@ -8,6 +8,8 @@ import {
   fetchBingoBotRooms,
   createBingoBot,
   updateBingoBot,
+  connectBingoBot,
+  disconnectBingoBot,
   deleteBingoBot,
 } from "../../../redux/actions";
 
@@ -69,8 +71,8 @@ export default function BingoBots() {
 
   const handleCreate = async (e) => {
     e.preventDefault();
-    if (!form.nick.trim() || !form.roomId) {
-      Swal.fire({ title: "Faltan datos", text: "Elegí un nick y una sala.", icon: "warning", ...swalThemeConfig });
+    if (!form.nick.trim()) {
+      Swal.fire({ title: "Faltan datos", text: "Elegí un nick para el bot.", icon: "warning", ...swalThemeConfig });
       return;
     }
     setSubmitting(true);
@@ -79,7 +81,8 @@ export default function BingoBots() {
         createBingoBot({
           nick: form.nick.trim(),
           sexo: form.sexo,
-          roomId: form.roomId,
+          // Vacío = se crea desconectado, reutilizable — se conecta después con el botón "Conectar".
+          roomId: form.roomId || undefined,
           initialChips: Number(form.initialChips),
           minCardsPerGame: Number(form.minCardsPerGame),
           maxCardsPerGame: Number(form.maxCardsPerGame),
@@ -102,22 +105,53 @@ export default function BingoBots() {
     }
   };
 
-  const handleToggleActive = async (bot) => {
+  const handleConnect = async (bot) => {
+    if (rooms.length === 0) {
+      Swal.fire({ title: "No hay salas", text: "No encontré salas de Bingo disponibles.", icon: "warning", ...swalThemeConfig });
+      return;
+    }
+    const inputOptions = rooms.reduce((acc, room) => {
+      acc[room.id] = room.name;
+      return acc;
+    }, {});
+    const result = await Swal.fire({
+      title: `Conectar a ${bot.nick}`,
+      input: "select",
+      inputOptions,
+      inputPlaceholder: "Elegí una sala",
+      showCancelButton: true,
+      confirmButtonText: "Conectar",
+      cancelButtonText: "Cancelar",
+      ...swalThemeConfig,
+      inputValidator: (value) => {
+        if (!value) return "Elegí una sala";
+      },
+    });
+    if (!result.isConfirmed || !result.value) return;
     try {
-      await dispatch(updateBingoBot(bot.id, { isActive: !bot.isActive }));
-      setBots((prev) => prev.map((b) => (b.id === bot.id ? { ...b, isActive: !b.isActive } : b)));
+      await dispatch(connectBingoBot(bot.id, result.value));
+      await loadData();
     } catch (error) {
-      Swal.fire({ title: "Error", text: "No se pudo actualizar el bot.", icon: "error", ...swalThemeConfig });
+      Swal.fire({ title: "Error", text: "No se pudo conectar el bot.", icon: "error", ...swalThemeConfig });
+    }
+  };
+
+  const handleDisconnect = async (bot) => {
+    try {
+      await dispatch(disconnectBingoBot(bot.id));
+      setBots((prev) => prev.map((b) => (b.id === bot.id ? { ...b, roomId: null, roomName: null, connected: false } : b)));
+    } catch (error) {
+      Swal.fire({ title: "Error", text: "No se pudo desconectar el bot.", icon: "error", ...swalThemeConfig });
     }
   };
 
   const handleDelete = async (bot) => {
     const result = await Swal.fire({
-      title: `¿Sacar a ${bot.nick} de "${bot.roomName}"?`,
-      text: "El bot deja de jugar en esa sala. La cuenta y su historial no se borran.",
+      title: `¿Borrar a ${bot.nick} para siempre?`,
+      text: "Se borra la cuenta del bot por completo — a diferencia de desconectar, esto no se puede deshacer.",
       icon: "warning",
       showCancelButton: true,
-      confirmButtonText: "Sacar bot",
+      confirmButtonText: "Borrar bot",
       cancelButtonText: "Cancelar",
       ...swalThemeConfig,
     });
@@ -126,7 +160,7 @@ export default function BingoBots() {
       await dispatch(deleteBingoBot(bot.id));
       setBots((prev) => prev.filter((b) => b.id !== bot.id));
     } catch (error) {
-      Swal.fire({ title: "Error", text: "No se pudo sacar al bot.", icon: "error", ...swalThemeConfig });
+      Swal.fire({ title: "Error", text: "No se pudo borrar al bot.", icon: "error", ...swalThemeConfig });
     }
   };
 
@@ -157,8 +191,9 @@ export default function BingoBots() {
           <div>
             <h1 className="font-headline-lg text-headline-lg text-on-background mb-2">Bots de Bingo</h1>
             <p className="text-on-surface-variant font-body-sm max-w-2xl">
-              Cuentas automáticas que compran cartones y juegan solas en una sala para que se vea activa. Usan fichas
-              ficticias — no participan de ningún ranking ni total del panel.
+              Cuentas automáticas que compran cartones y juegan solas en una sala para que se vea activa. Son
+              reutilizables: "Desconectar" las saca de la sala sin borrarlas, y "Conectar" las manda a cualquier sala
+              cuando quieras. Usan fichas ficticias — no participan de ningún ranking ni total del panel.
             </p>
           </div>
           <button
@@ -198,14 +233,14 @@ export default function BingoBots() {
             </select>
           </div>
           <div className="col-span-2 md:col-span-1">
-            <label className="text-[10px] uppercase tracking-widest text-on-surface-variant mb-1 block">Sala</label>
+            <label className="text-[10px] uppercase tracking-widest text-on-surface-variant mb-1 block">Sala (opcional)</label>
             <select
               name="roomId"
               value={form.roomId}
               onChange={handleFormChange}
               className="w-full bg-surface-container-lowest border border-outline-variant/30 rounded-xl px-4 py-2.5 text-body-sm focus:border-primary outline-none appearance-none text-on-surface"
             >
-              <option value="">Elegir sala...</option>
+              <option value="">Sin conectar (queda reutilizable)</option>
               {rooms.map((room) => (
                 <option key={room.id} value={room.id}>{room.name}</option>
               ))}
@@ -274,11 +309,10 @@ export default function BingoBots() {
                 <thead>
                   <tr className="bg-surface-container-high border-b border-outline-variant/30">
                     <th className="px-6 py-4 font-label-lg text-label-lg text-primary uppercase tracking-wider">Nick</th>
-                    <th className="px-6 py-4 font-label-lg text-label-lg text-primary uppercase tracking-wider">Sala</th>
+                    <th className="px-6 py-4 font-label-lg text-label-lg text-primary uppercase tracking-wider">Conexión</th>
                     <th className="px-6 py-4 font-label-lg text-label-lg text-primary uppercase tracking-wider text-right">Fichas</th>
                     <th className="px-6 py-4 font-label-lg text-label-lg text-primary uppercase tracking-wider text-center">Cartones/partida</th>
                     <th className="px-6 py-4 font-label-lg text-label-lg text-primary uppercase tracking-wider text-center">Auto-recarga</th>
-                    <th className="px-6 py-4 font-label-lg text-label-lg text-primary uppercase tracking-wider text-center">Estado</th>
                     <th className="px-6 py-4 font-label-lg text-label-lg text-primary uppercase tracking-wider text-center">Acciones</th>
                   </tr>
                 </thead>
@@ -286,30 +320,49 @@ export default function BingoBots() {
                   {bots.map((bot) => (
                     <tr key={bot.id} className="hover:bg-surface-variant/20 transition-colors">
                       <td className="px-6 py-4 font-bold text-white">{bot.nick}</td>
-                      <td className="px-6 py-4 text-on-surface-variant text-sm">{bot.roomName}</td>
+                      <td className="px-6 py-4">
+                        {bot.connected ? (
+                          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-green-500/10 text-green-400">
+                            <span className="w-1.5 h-1.5 rounded-full bg-green-400"></span>
+                            {bot.roomName}
+                          </span>
+                        ) : (
+                          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-gray-500/10 text-gray-400">
+                            <span className="w-1.5 h-1.5 rounded-full bg-gray-400"></span>
+                            Desconectado
+                          </span>
+                        )}
+                      </td>
                       <td className="px-6 py-4 text-right font-bold text-primary">{numberFormat(bot.chips)}</td>
                       <td className="px-6 py-4 text-center text-on-surface text-sm">{bot.minCardsPerGame}–{bot.maxCardsPerGame}</td>
                       <td className="px-6 py-4 text-center text-on-surface-variant text-xs">
                         &lt; {numberFormat(bot.autoTopUpThreshold)} → {numberFormat(bot.autoTopUpAmount)}
                       </td>
-                      <td className="px-6 py-4 text-center">
-                        <button
-                          onClick={() => handleToggleActive(bot)}
-                          className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider cursor-pointer border-0 transition-colors ${
-                            bot.isActive ? "bg-green-500/10 text-green-400 hover:bg-green-500/20" : "bg-gray-500/10 text-gray-400 hover:bg-gray-500/20"
-                          }`}
-                        >
-                          {bot.isActive ? "Activo" : "Pausado"}
-                        </button>
-                      </td>
-                      <td className="px-6 py-4 text-center">
-                        <button
-                          onClick={() => handleDelete(bot)}
-                          title="Sacar de la sala"
-                          className="w-9 h-9 rounded-full flex items-center justify-center text-on-surface-variant hover:text-error hover:bg-error/10 transition-colors bg-transparent border-0 cursor-pointer mx-auto"
-                        >
-                          <span className="material-symbols-outlined text-[18px]">delete</span>
-                        </button>
+                      <td className="px-6 py-4">
+                        <div className="flex items-center justify-center gap-2">
+                          {bot.connected ? (
+                            <button
+                              onClick={() => handleDisconnect(bot)}
+                              className="px-3 py-1.5 rounded-lg text-xs font-bold border border-outline-variant/30 text-on-surface hover:bg-surface-variant/20 transition-colors cursor-pointer bg-transparent"
+                            >
+                              Desconectar
+                            </button>
+                          ) : (
+                            <button
+                              onClick={() => handleConnect(bot)}
+                              className="px-3 py-1.5 rounded-lg text-xs font-bold bg-primary/10 text-primary hover:bg-primary/20 transition-colors cursor-pointer border-0"
+                            >
+                              Conectar
+                            </button>
+                          )}
+                          <button
+                            onClick={() => handleDelete(bot)}
+                            title="Borrar bot para siempre"
+                            className="w-9 h-9 rounded-full flex items-center justify-center text-on-surface-variant hover:text-error hover:bg-error/10 transition-colors bg-transparent border-0 cursor-pointer"
+                          >
+                            <span className="material-symbols-outlined text-[18px]">delete</span>
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   ))}

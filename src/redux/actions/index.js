@@ -423,6 +423,16 @@ export const updateBingoBot = (id, payload) => async () => {
     return data;
 };
 
+export const connectBingoBot = (id, roomId) => async () => {
+    const { data } = await axios.post(`${API_URL}/admin/bingo-bots/${id}/connect`, { roomId });
+    return data;
+};
+
+export const disconnectBingoBot = (id) => async () => {
+    const { data } = await axios.post(`${API_URL}/admin/bingo-bots/${id}/disconnect`);
+    return data;
+};
+
 export const deleteBingoBot = (id) => async () => {
     const { data } = await axios.delete(`${API_URL}/admin/bingo-bots/${id}`);
     return data;
