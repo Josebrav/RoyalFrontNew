@@ -20,8 +20,11 @@
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
-    <script>
-      // Inject PayPal script dynamically from environment variable
+    <script type="module">
+      // Inject PayPal script dynamically from environment variable. Tiene que ser
+      // type="module": import.meta.env solo es válido dentro de un módulo ES — como
+      // <script> normal, esto tiraba "Cannot use 'import.meta' outside a module" en la
+      // consola de cualquiera que la mirara, y el SDK de PayPal nunca llegaba a cargarse.
       function initPayPalScript() {
         const clientId = import.meta.env.VITE_PAYPAL_CLIENT_ID;
         if (clientId) {
