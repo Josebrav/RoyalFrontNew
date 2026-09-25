@@ -323,8 +323,21 @@ export default function Home() {
     const elements = document.querySelectorAll(".reveal");
     elements.forEach((el) => revealObserver.observe(el));
 
+    // Red de seguridad: `.reveal` arranca en opacity:0 (ver index.css) y se queda así para
+    // siempre si por lo que sea el IntersectionObserver nunca dispara (ej. el layout todavía no
+    // asentó cuando se creó, o el navegador tarda en pintar) — eso deja el título y los botones
+    // de "Iniciar Sesión"/"Registrarse" invisibles sin ningún error en consola, indistinguible de
+    // una página realmente rota. Después de un instante, se fuerza "active" en todo lo que
+    // todavía no lo tenga, sea cual sea la razón — nunca debería depender de esto en el uso
+    // normal (el observer ya debería haber disparado antes), pero garantiza que el contenido de
+    // arriba de la página SIEMPRE termine visible.
+    const fallbackTimer = setTimeout(() => {
+      document.querySelectorAll(".reveal:not(.active)").forEach((el) => el.classList.add("active"));
+    }, 700);
+
     return () => {
       elements.forEach((el) => revealObserver.unobserve(el));
+      clearTimeout(fallbackTimer);
     };
   }, [currentUser]);
 
