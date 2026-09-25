@@ -1,6 +1,5 @@
 {
   "rewrites": [
-    { "source": "/auth/:path*", "destination": "https://royalgamesbackend.onrender.com/auth/:path*" },
     { "source": "/(.*)", "destination": "/" }
   ],
   "headers": [
