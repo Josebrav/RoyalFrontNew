@@ -93,42 +93,62 @@ export function AuthProvider({ children }) {
      */
     useEffect(() => {
         const restoreSession = async () => {
+            console.log("[Auth] restoreSession: arrancando...");
             let accessToken;
             try {
                 accessToken = await authService.refreshSession();
+                console.log("[Auth] restoreSession: refreshSession OK, access_token recibido");
             } catch (error) {
+                console.log(
+                    "[Auth] restoreSession: refreshSession falló (normal si no había sesión) ->",
+                    error?.response?.status,
+                    error?.message,
+                );
                 authService.clearSession();
                 dispatch(cleanCurrentUser());
                 setIsAuthenticated(false);
                 setUser(null);
                 setLoading(false);
+                console.log("[Auth] restoreSession: loading=false (rama sin sesión)");
                 return;
             }
 
             const email = decodeJwt(accessToken)?.email;
             if (!email) {
+                console.error("[Auth] restoreSession: el access_token no tiene email decodificable");
                 authService.clearSession();
                 dispatch(cleanCurrentUser());
                 setIsAuthenticated(false);
                 setUser(null);
                 setLoading(false);
+                console.log("[Auth] restoreSession: loading=false (rama sin email)");
                 return;
             }
 
             setIsAuthenticated(true);
             try {
+                console.log("[Auth] restoreSession: pidiendo getUserByEmail...");
                 const refreshedUser = await dispatch(getUserByEmail(email));
+                console.log("[Auth] restoreSession: getUserByEmail OK", refreshedUser?.id);
                 setUser(refreshedUser || null);
             } catch (error) {
+                console.error("[Auth] restoreSession: getUserByEmail falló ->", error?.response?.status, error?.message);
                 authService.clearSession();
                 dispatch(cleanCurrentUser());
                 setIsAuthenticated(false);
                 setUser(null);
             }
             setLoading(false);
+            console.log("[Auth] restoreSession: loading=false (rama con sesión)");
         };
 
-        restoreSession();
+        restoreSession().catch((err) => {
+            // Red de seguridad: si algo de lo de arriba tira algo no contemplado, que quede
+            // logueado Y que igual se libere el loading — así nunca se queda pantalla en blanco
+            // atascada en el spinner para siempre.
+            console.error("[Auth] restoreSession: excepción NO contemplada ->", err);
+            setLoading(false);
+        });
     }, [dispatch]);
 
     /**

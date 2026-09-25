@@ -9,6 +9,7 @@ import store from './redux/store/index.js';
 import { Provider } from 'react-redux'
 
 import { setupAxiosInterceptors } from './api/axiosInterceptors.js';
+import ErrorBoundary from './components/ErrorBoundary/errorBoundary.jsx';
 
 import './index.css'
 
@@ -20,13 +21,15 @@ setupAxiosInterceptors();
 initMercadoPago('APP_USR-8373006830302721-053121-3dbe937245fe9857906dec4ec8b21152-3440257234');
 
 ReactDOM.createRoot(document.getElementById('root')).render(
+  <ErrorBoundary>
   <Provider store={store}>
-  
+
   <BrowserRouter>
   <ChakraProvider>
     <App />
   </ChakraProvider>
   </BrowserRouter>
-  
+
   </Provider>
+  </ErrorBoundary>
 )

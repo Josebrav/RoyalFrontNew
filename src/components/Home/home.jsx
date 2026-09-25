@@ -420,6 +420,8 @@ export default function Home() {
 
   // --- RENDERING CONFIG ---
 
+  console.log("[Home] render, auth.loading=", auth.loading, "currentUser?.id=", currentUser?.id, "isGuestPreview=", isGuestPreview);
+
   // Todavía no sabemos si hay sesión o no (ver comentario junto a `auth` arriba) — ni landing de
   // invitado ni dashboard todavía, solo un loader, para no pasar de una pantalla a otra de golpe.
   if (auth.loading) {
