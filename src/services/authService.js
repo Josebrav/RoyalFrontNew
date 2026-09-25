@@ -2,6 +2,19 @@ import axios from 'axios';
 import API_URL from '../api/rutaApi';
 import { tokenStore } from '../api/tokenStore';
 
+// Los 4 endpoints de /auth (y SOLO esos) van por acá en vez de por API_URL directo. Motivo:
+// royalgames.lat y royalgamesbackend.onrender.com son dominios distintos, así que la cookie
+// httpOnly del refresh token es "de tercero" para el navegador — Safari la bloquea por completo
+// (ITP) y Firefox en modo estricto también, sin importar qué maxAge le pida el backend. La
+// sesión terminaba viviendo solo lo que dura el access token (unas horas) para esos navegadores.
+// vercel.json tiene un rewrite `/auth/:path*` -> el backend real: en producción (build servido
+// por Vercel) el navegador solo ve un pedido a royalgames.lat/auth/..., mismo origen que la
+// propia página — la cookie pasa a ser de primera parte y deja de estar sujeta a ese bloqueo.
+// En dev (`npm run dev`, sin ese rewrite corriendo) se sigue pegándole directo al backend, como
+// siempre. El resto de la app (todo lo que NO es /auth) sigue usando API_URL sin cambios: usa el
+// access token en memoria vía header Authorization, no depende de ninguna cookie.
+const AUTH_BASE = import.meta.env.PROD ? '/auth' : `${API_URL}/auth`;
+
 /**
  * Servicio centralizado de autenticación
  * Utiliza el backend NestJS en lugar de Firebase
@@ -38,7 +51,7 @@ export const authService = {
    */
   login: async (identifier, password) => {
     try {
-      const response = await axios.post(`${API_URL}/auth/login`, {
+      const response = await axios.post(`${AUTH_BASE}/login`, {
         identifier,
         password,
       });
@@ -59,7 +72,7 @@ export const authService = {
    */
   loginWithGoogle: async (googleToken) => {
     try {
-      const response = await axios.post(`${API_URL}/auth/google`, {
+      const response = await axios.post(`${AUTH_BASE}/google`, {
         token: googleToken,
       });
       const { access_token } = response.data;
@@ -79,7 +92,7 @@ export const authService = {
    */
   refreshSession: async () => {
     const response = await axios.post(
-      `${API_URL}/auth/refresh`,
+      `${AUTH_BASE}/refresh`,
       {},
       { headers: { 'X-Refresh': '1' } },
     );
@@ -96,7 +109,7 @@ export const authService = {
    */
   logout: async () => {
     try {
-      await axios.post(`${API_URL}/auth/logout`);
+      await axios.post(`${AUTH_BASE}/logout`);
     } catch (error) {
       // No-op: igual limpiamos localmente abajo.
     }
