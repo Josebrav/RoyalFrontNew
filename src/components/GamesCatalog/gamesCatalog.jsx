@@ -1,10 +1,16 @@
 import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
 import { CATEGORY_META, CATEGORY_ORDER, getGamesByCategory } from "../../data/gamesCatalog";
 import { t } from "../../i18n/strings";
 
 function GameRow({ game, compact }) {
   const navigate = useNavigate();
   const isActive = game.status === "active";
+  // Mismo cover que un admin puede subir desde el carrusel de Home/detalle del juego (ver
+  // EditableImage) - acá se lee sin el lápiz de edición (a este ícono de 40px no le entra), pero
+  // se muestra igual para que sea consistente en todo el sitio.
+  const override = useSelector((state) => state.siteContent[`games.${game.slug}.cover`]);
+  const coverSrc = override?.type === "image" && override.imageUrl ? override.imageUrl : game.image;
 
   return (
     <button
@@ -19,8 +25,8 @@ function GameRow({ game, compact }) {
           isActive ? "border-primary/40 bg-primary/10" : "border-outline-variant/30 bg-surface-container-high grayscale"
         }`}
       >
-        {game.image ? (
-          <img src={game.image} alt={game.name} className="w-full h-full object-cover" />
+        {coverSrc ? (
+          <img src={coverSrc} alt={game.name} className="w-full h-full object-cover" />
         ) : (
           <span className={`material-symbols-outlined text-[20px] ${isActive ? "text-primary" : "text-on-surface-variant"}`}>
             {game.icon}
