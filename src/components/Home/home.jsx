@@ -545,7 +545,9 @@ export default function Home() {
               <div className="flex items-center justify-between mb-6">
                 <h2 className="font-headline-sm text-headline-sm flex items-center gap-2 text-white">
                   <span className="material-symbols-outlined text-primary">star</span>
-                  <EditableText contentKey="home.dashboard.popularGamesTitle" as="span">Juegos Populares</EditableText>
+                  <EditableText contentKey="home.dashboard.popularGamesTitle" as="span">
+                    {t("home.dashboard.popularGamesTitle")}
+                  </EditableText>
                 </h2>
                 <div className="flex gap-2">
                   <button
@@ -573,6 +575,7 @@ export default function Home() {
                       <EditableImage
                         contentKey={`games.${game.slug}.cover`}
                         fallbackSrc={game.image}
+                        fallbackIcon={game.icon}
                         alt={game.name}
                         className="w-full h-full object-cover"
                         recommendedSize="600×800px aprox. (vertical), JPG o PNG"
@@ -580,7 +583,7 @@ export default function Home() {
                     </div>
                     <div className="p-3 text-left">
                       <span className={`inline-block text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full mb-1.5 ${CATEGORY_META[game.category].chipClassName}`}>
-                        {CATEGORY_META[game.category].label}
+                        {t(`catalog.category.${game.category}`)}
                       </span>
                       <h4 className="font-bold text-label-lg font-label-lg truncate text-white">{game.name}</h4>
                     </div>
@@ -590,13 +593,13 @@ export default function Home() {
                         onClick={() => handlePlayGame(game.playPath, game.name)}
                         className="gold-gradient w-3/4 py-2 rounded font-bold text-on-primary text-label-md cursor-pointer border-0"
                       >
-                        JUGAR
+                        {t("home.dashboard.jugar")}
                       </button>
                       <button
                         onClick={() => navigate(`/juegos/${game.slug}`)}
                         className="border border-primary bg-transparent text-primary w-3/4 py-2 rounded font-bold text-label-md hover:bg-primary/10 cursor-pointer"
                       >
-                        INFO
+                        {t("home.dashboard.info")}
                       </button>
                     </div>
                   </div>
@@ -617,13 +620,13 @@ export default function Home() {
                 style={{ boxShadow: "0 0 20px rgba(52, 211, 153, 0.15)" }}
               >
                 <div className="bg-gradient-to-r from-emerald-500 to-teal-600 p-4 flex justify-between items-center">
-                  <h3 className="text-white font-bold text-headline-sm font-headline-sm">Top Ganadores</h3>
-                  <span className="bg-black/25 text-white px-2 py-1 rounded text-label-md font-label-md font-bold">EN VIVO</span>
+                  <h3 className="text-white font-bold text-headline-sm font-headline-sm">{t("home.dashboard.topGanadores")}</h3>
+                  <span className="bg-black/25 text-white px-2 py-1 rounded text-label-md font-label-md font-bold">{t("home.dashboard.enVivo")}</span>
                 </div>
                 <div className="p-6 space-y-3">
                   {topWinners.length === 0 ? (
                     <p className="text-on-surface-variant text-sm text-center py-4">
-                      Todavía no hay premios registrados. ¡Sé el primero en ganar!
+                      {t("home.dashboard.noPrizesYet")}
                     </p>
                   ) : (
                     topWinners.map((player, index) => (
@@ -657,13 +660,13 @@ export default function Home() {
                 <div className="p-4 border-b border-outline-variant/10 flex items-center gap-2">
                   <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse flex-shrink-0"></span>
                   <h3 className="font-bold text-headline-sm font-headline-sm text-white">
-                    {otherOnlineUsers.length} {otherOnlineUsers.length === 1 ? "Jugador Conectado" : "Jugadores Conectados"}
+                    {otherOnlineUsers.length} {otherOnlineUsers.length === 1 ? t("home.dashboard.jugadorConectado") : t("home.dashboard.jugadoresConectados")}
                   </h3>
                 </div>
                 <div className="max-h-80 overflow-y-auto divide-y divide-outline-variant/10">
                   {otherOnlineUsers.length === 0 ? (
                     <p className="text-on-surface-variant text-sm text-center py-6 px-4">
-                      No hay otros jugadores conectados ahora mismo.
+                      {t("home.dashboard.noOtherPlayers")}
                     </p>
                   ) : (
                     otherOnlineUsers.map((player) => {
@@ -687,7 +690,7 @@ export default function Home() {
                                 {player.nick}
                               </p>
                               <p className="text-[11px] text-on-surface-variant truncate">
-                                {activeGame ? <span className="text-sky-400">Jugando a {activeGame.name}</span> : "En el sitio"}
+                                {activeGame ? <span className="text-sky-400">{t("home.dashboard.jugandoA")} {activeGame.name}</span> : t("home.dashboard.enElSitio")}
                               </p>
                             </div>
                           </button>
@@ -696,7 +699,7 @@ export default function Home() {
                               onClick={() => handlePlayGame(activeGame.playPath, activeGame.name)}
                               className="px-3 py-1.5 rounded bg-gradient-to-r from-sky-500 to-blue-600 text-white text-[11px] font-bold uppercase flex-shrink-0 cursor-pointer border-0 hover:brightness-110 transition-all"
                             >
-                              Jugar
+                              {t("home.dashboard.jugarBtn")}
                             </button>
                           )}
                         </div>
@@ -712,8 +715,8 @@ export default function Home() {
                 className="bg-surface-container rounded-xl p-6 border border-outline-variant/20 flex items-center gap-4 relative overflow-hidden group cursor-pointer text-left"
               >
                 <div className="relative z-10 flex-1">
-                  <h4 className="font-bold text-headline-sm text-white">Giro Diario VIP</h4>
-                  <p className="text-on-surface-variant text-body-sm font-body-sm">Tu regalo diario está listo para reclamar.</p>
+                  <h4 className="font-bold text-headline-sm text-white">{t("home.dashboard.giroDiario")}</h4>
+                  <p className="text-on-surface-variant text-body-sm font-body-sm">{t("home.dashboard.giroDiarioText")}</p>
                 </div>
                 <span className="material-symbols-outlined text-primary text-5xl relative z-10 group-hover:scale-110 transition-transform">redeem</span>
                 <div className="absolute -right-4 -bottom-4 opacity-5">
@@ -731,28 +734,28 @@ export default function Home() {
             className="text-primary flex flex-col items-center gap-1 transition-transform active:scale-90 duration-200 bg-transparent border-0 cursor-pointer"
           >
             <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>home</span>
-            <span className="font-label-md text-label-md">Inicio</span>
+            <span className="font-label-md text-label-md">{t("home.dashboard.navInicio")}</span>
           </button>
-          <button 
+          <button
             onClick={() => navigate('/juegos')}
             className="text-on-surface-variant hover:text-primary flex flex-col items-center gap-1 transition-transform active:scale-90 duration-200 bg-transparent border-0 cursor-pointer"
           >
             <span className="material-symbols-outlined">casino</span>
-            <span className="font-label-md text-label-md">Juegos</span>
+            <span className="font-label-md text-label-md">{t("home.dashboard.navJuegos")}</span>
           </button>
-          <button 
+          <button
             onClick={() => navigate('/juegos')}
             className="text-on-surface-variant hover:text-primary flex flex-col items-center gap-1 transition-transform active:scale-90 duration-200 bg-transparent border-0 cursor-pointer"
           >
             <span className="material-symbols-outlined">search</span>
-            <span className="font-label-md text-label-md">Buscar</span>
+            <span className="font-label-md text-label-md">{t("home.dashboard.navBuscar")}</span>
           </button>
           <button
             onClick={() => navigate(currentUser?.nick ? `/perfil/${currentUser.nick}` : '/perfil')}
             className="text-on-surface-variant hover:text-primary flex flex-col items-center gap-1 transition-transform active:scale-90 duration-200 bg-transparent border-0 cursor-pointer"
           >
             <span className="material-symbols-outlined">account_circle</span>
-            <span className="font-label-md text-label-md">Perfil</span>
+            <span className="font-label-md text-label-md">{t("home.dashboard.navPerfil")}</span>
           </button>
         </nav>
       </div>

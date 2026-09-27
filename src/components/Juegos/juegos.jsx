@@ -83,19 +83,14 @@ export default function GameGrid() {
                 }`}
               >
                 <div className={`aspect-square overflow-hidden flex items-center justify-center bg-gradient-to-br from-surface-container-high to-surface-container-low ${!isActive ? "grayscale" : ""}`}>
-                  {game.image ? (
-                    <EditableImage
-                      contentKey={`games.${game.slug}.cover`}
-                      fallbackSrc={game.image}
-                      alt={game.name}
-                      className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-                      recommendedSize="600×800px aprox. (vertical), JPG o PNG"
-                    />
-                  ) : (
-                    <span className="material-symbols-outlined text-[64px] text-on-surface-variant/40">
-                      {game.icon}
-                    </span>
-                  )}
+                  <EditableImage
+                    contentKey={`games.${game.slug}.cover`}
+                    fallbackSrc={game.image}
+                    fallbackIcon={game.icon}
+                    alt={game.name}
+                    className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                    recommendedSize="600×800px aprox. (vertical), JPG o PNG"
+                  />
                 </div>
 
                 <div className="absolute bottom-0 w-full p-3 bg-gradient-to-t from-black via-black/70 to-transparent text-left">

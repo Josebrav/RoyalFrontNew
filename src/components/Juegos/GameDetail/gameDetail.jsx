@@ -63,21 +63,14 @@ export default function GameDetail() {
 
       {/* Banner */}
       <div className="relative w-full h-56 md:h-80 rounded-xl overflow-hidden border border-outline-variant/20 mb-8">
-        {game.image ? (
-          <EditableImage
-            contentKey={`games.${game.slug}.cover`}
-            fallbackSrc={game.image}
-            alt={game.name}
-            className="w-full h-full object-cover"
-            recommendedSize="600×800px aprox. (vertical), JPG o PNG"
-          />
-        ) : (
-          <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-surface-container-high to-surface-container-low">
-            <span className="material-symbols-outlined text-[96px] text-on-surface-variant/40">
-              {game.icon}
-            </span>
-          </div>
-        )}
+        <EditableImage
+          contentKey={`games.${game.slug}.cover`}
+          fallbackSrc={game.image}
+          fallbackIcon={game.icon}
+          alt={game.name}
+          className="w-full h-full object-cover"
+          recommendedSize="600×800px aprox. (vertical), JPG o PNG"
+        />
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent" />
         <div className="absolute bottom-0 left-0 p-6 md:p-8">
           <span className={`text-[11px] font-black uppercase tracking-widest ${categoryMeta.className}`}>

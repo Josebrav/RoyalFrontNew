@@ -10,7 +10,7 @@ const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp"];
 // caller's own wrapping element already has position:relative (matches every current call site,
 // which are all banner/card containers that are already `relative`), so it doesn't add an extra
 // wrapping div that would fight with the `className` prop's own absolute-positioning needs.
-export default function EditableImage({ contentKey, fallbackSrc, alt = "", className = "", recommendedSize }) {
+export default function EditableImage({ contentKey, fallbackSrc, fallbackIcon = "image", alt = "", className = "", recommendedSize }) {
   const dispatch = useDispatch();
   const currentUser = useSelector((state) => state.currentUser);
   const override = useSelector((state) => state.siteContent[contentKey]);
@@ -45,7 +45,16 @@ export default function EditableImage({ contentKey, fallbackSrc, alt = "", class
 
   return (
     <>
-      <img src={src} alt={alt} className={className} />
+      {src ? (
+        <img src={src} alt={alt} className={className} />
+      ) : (
+        // Sin imagen en la CMS y sin fallback local (ej. un juego nuevo sin cover todavía) — un
+        // <img src={undefined}> se ve roto y muestra el alt como texto crudo. Este placeholder
+        // deja clara la falta sin verse como un bug, hasta que un admin suba una imagen real.
+        <div className={`${className} flex items-center justify-center bg-surface-container-high text-on-surface-variant`}>
+          <span className="material-symbols-outlined text-4xl">{fallbackIcon}</span>
+        </div>
+      )}
       {canEdit && (
         <button
           type="button"
