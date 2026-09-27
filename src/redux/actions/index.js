@@ -384,9 +384,9 @@ export const giftChips = (toUserId, amount) => async (dispatch, getState) => {
 
 // ===== Admin =====
 
-export const fetchAdminOverview = () => async (dispatch) => {
+export const fetchAdminOverview = (includeBots = false) => async (dispatch) => {
     try {
-        const { data } = await axios.get(`${API_URL}/admin/overview`);
+        const { data } = await axios.get(`${API_URL}/admin/overview`, { params: { includeBots } });
         dispatch({ type: ADMIN_OVERVIEW_SUCCESS, payload: data });
     } catch (error) {
         dispatch({ type: ADMIN_ACTION_ERROR, payload: error.message });
@@ -435,6 +435,27 @@ export const disconnectBingoBot = (id) => async () => {
 
 export const deleteBingoBot = (id) => async () => {
     const { data } = await axios.delete(`${API_URL}/admin/bingo-bots/${id}`);
+    return data;
+};
+
+// Bots en Minas y en los juegos Unity — mismo patrón sin estado en Redux que los de Bingo arriba.
+export const fetchMinesBots = () => async () => {
+    const { data } = await axios.get(`${API_URL}/admin/mines-bots`);
+    return data;
+};
+
+export const upsertMinesBotConfig = (botId, payload) => async () => {
+    const { data } = await axios.put(`${API_URL}/admin/mines-bots/${botId}`, payload);
+    return data;
+};
+
+export const fetchUnityBots = () => async () => {
+    const { data } = await axios.get(`${API_URL}/admin/unity-bots`);
+    return data;
+};
+
+export const upsertUnityBotConfig = (botId, gameSlug, payload) => async () => {
+    const { data } = await axios.put(`${API_URL}/admin/unity-bots/${botId}/${gameSlug}`, payload);
     return data;
 };
 

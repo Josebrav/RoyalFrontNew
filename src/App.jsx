@@ -33,6 +33,8 @@ import AdminDeposits from './components/AdminPanel/Deposits/deposits';
 import AdminPrizes from './components/AdminPanel/Prizes/prizes';
 import AdminReferrals from './components/AdminPanel/Referrals/referrals';
 import BingoBots from './components/AdminPanel/BingoBots/bingoBots';
+import MinesBots from './components/AdminPanel/MinesBots/minesBots';
+import UnityBots from './components/AdminPanel/UnityBots/unityBots';
 import Trophies from './components/AdminPanel/Trophies/trophies';
 import ResetPassword from './components/ResetPassword/resetPassword';
 import ProtectedRoute from './components/ProtectedRoute/ProtectedRoute';
@@ -145,6 +147,8 @@ function App() {
             <Route path="/admin/prizes" element={<ProtectedRoute><AdminPrizes /></ProtectedRoute>} />
             <Route path="/admin/referrals" element={<ProtectedRoute><AdminReferrals /></ProtectedRoute>} />
             <Route path="/admin/bingo-bots" element={<ProtectedRoute><BingoBots /></ProtectedRoute>} />
+            <Route path="/admin/mines-bots" element={<ProtectedRoute><MinesBots /></ProtectedRoute>} />
+            <Route path="/admin/unity-bots" element={<ProtectedRoute><UnityBots /></ProtectedRoute>} />
             <Route path="/admin/trophies" element={<ProtectedRoute><Trophies /></ProtectedRoute>} />
             <Route path="/noticias" element={<News />} />
             <Route path="/about" element={<AboutUs />} />

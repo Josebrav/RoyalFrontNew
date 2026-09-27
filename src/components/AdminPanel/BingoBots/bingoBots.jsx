@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import { swalThemeConfig } from "../../../utils/formatters";
+import BotsTabNav from "../Bots/botsTabNav";
 import {
   fetchBingoBots,
   fetchBingoBotRooms,
@@ -164,6 +165,62 @@ export default function BingoBots() {
     }
   };
 
+  const handleEditMobilityChat = async (bot) => {
+    const otherRooms = rooms.filter((r) => r.id !== bot.roomId);
+    const checkboxesHtml = otherRooms
+      .map(
+        (r) => `
+          <label style="display:flex;align-items:center;gap:8px;padding:4px 0;font-size:13px;text-align:left">
+            <input type="checkbox" class="swal-extra-room" value="${r.id}" ${bot.extraRoomIds?.includes(r.id) ? "checked" : ""} />
+            ${r.name}
+          </label>
+        `,
+      )
+      .join("");
+
+    const result = await Swal.fire({
+      title: `Movilidad y chat — ${bot.nick}`,
+      html: `
+        <div style="text-align:left;display:flex;flex-direction:column;gap:12px">
+          <label style="display:flex;align-items:center;gap:8px;cursor:pointer">
+            <input id="swal-mobility" type="checkbox" ${bot.mobilityEnabled ? "checked" : ""} />
+            Movilidad (cambia de sala y compra en varias a la vez)
+          </label>
+          <label style="display:flex;align-items:center;gap:8px;cursor:pointer">
+            <input id="swal-chatty" type="checkbox" ${bot.chattyEnabled ? "checked" : ""} />
+            Chat activo (comenta al azar)
+          </label>
+          ${
+            otherRooms.length > 0
+              ? `<div>
+                  <p style="font-size:11px;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:6px">Salas extra (movilidad)</p>
+                  <div style="max-height:180px;overflow-y:auto">${checkboxesHtml}</div>
+                </div>`
+              : ""
+          }
+        </div>
+      `,
+      showCancelButton: true,
+      confirmButtonText: "Guardar",
+      cancelButtonText: "Cancelar",
+      ...swalThemeConfig,
+      preConfirm: () => {
+        const mobilityEnabled = document.getElementById("swal-mobility").checked;
+        const chattyEnabled = document.getElementById("swal-chatty").checked;
+        const extraRoomIds = Array.from(document.querySelectorAll(".swal-extra-room:checked")).map((el) => el.value);
+        return { mobilityEnabled, chattyEnabled, extraRoomIds };
+      },
+    });
+    if (!result.isConfirmed) return;
+
+    try {
+      await dispatch(updateBingoBot(bot.id, result.value));
+      setBots((prev) => prev.map((b) => (b.id === bot.id ? { ...b, ...result.value } : b)));
+    } catch (error) {
+      Swal.fire({ title: "Error", text: "No se pudo guardar la config.", icon: "error", ...swalThemeConfig });
+    }
+  };
+
   if (!viewerIsAdmin || forbidden) {
     return (
       <div className="bg-background text-on-background min-h-screen pt-20 pb-12 flex items-center justify-center">
@@ -187,13 +244,16 @@ export default function BingoBots() {
   return (
     <div className="bg-background text-on-background min-h-screen pt-20 pb-12">
       <div className="px-margin-desktop max-w-container-max mx-auto mb-8">
+        <BotsTabNav active="bingo" />
         <div className="flex justify-between items-end mb-6">
           <div>
             <h1 className="font-headline-lg text-headline-lg text-on-background mb-2">Bots de Bingo</h1>
             <p className="text-on-surface-variant font-body-sm max-w-2xl">
               Cuentas automáticas que compran cartones y juegan solas en una sala para que se vea activa. Son
               reutilizables: "Desconectar" las saca de la sala sin borrarlas, y "Conectar" las manda a cualquier sala
-              cuando quieras. Usan fichas ficticias — no participan de ningún ranking ni total del panel.
+              cuando quieras. Usan fichas ficticias — quedan afuera de los totales de fichas del panel, pero podés
+              incluirlas en el ranking interno ("Incluir bots" en el dashboard) y en Minas/juegos Unity ya suman al
+              ranking público de "Top Ganadores".
             </p>
           </div>
           <button
@@ -319,7 +379,17 @@ export default function BingoBots() {
                 <tbody className="divide-y divide-outline-variant/10">
                   {bots.map((bot) => (
                     <tr key={bot.id} className="hover:bg-surface-variant/20 transition-colors">
-                      <td className="px-6 py-4 font-bold text-white">{bot.nick}</td>
+                      <td className="px-6 py-4 font-bold text-white">
+                        <div className="flex items-center gap-1.5">
+                          {bot.nick}
+                          {bot.mobilityEnabled && (
+                            <span title="Movilidad activa" className="material-symbols-outlined text-[14px] text-primary">sync_alt</span>
+                          )}
+                          {bot.chattyEnabled && (
+                            <span title="Chat activo" className="material-symbols-outlined text-[14px] text-primary">chat_bubble</span>
+                          )}
+                        </div>
+                      </td>
                       <td className="px-6 py-4">
                         {bot.connected ? (
                           <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-green-500/10 text-green-400">
@@ -355,6 +425,13 @@ export default function BingoBots() {
                               Conectar
                             </button>
                           )}
+                          <button
+                            onClick={() => handleEditMobilityChat(bot)}
+                            title="Movilidad y chat"
+                            className="w-9 h-9 rounded-full flex items-center justify-center text-on-surface-variant hover:text-primary hover:bg-primary/10 transition-colors bg-transparent border-0 cursor-pointer"
+                          >
+                            <span className="material-symbols-outlined text-[18px]">tune</span>
+                          </button>
                           <button
                             onClick={() => handleDelete(bot)}
                             title="Borrar bot para siempre"

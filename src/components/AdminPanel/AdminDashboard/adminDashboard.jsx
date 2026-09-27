@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { fetchAdminOverview } from '../../../redux/actions';
@@ -25,10 +25,11 @@ const AdminDashboard = () => {
   // backend already strips them from the response for mods, this just keeps the UI from trying
   // to render fields that no longer exist instead of duplicating the role check pointlessly.
   const viewerIsAdmin = useSelector((state) => state.currentUser?.role) === 'admin';
+  const [includeBots, setIncludeBots] = useState(false);
 
   useEffect(() => {
-    dispatch(fetchAdminOverview());
-  }, [dispatch]);
+    dispatch(fetchAdminOverview(includeBots));
+  }, [dispatch, includeBots]);
 
   const kpis = overview
     ? [
@@ -171,10 +172,19 @@ const AdminDashboard = () => {
 
           {/* Top Players by Chips */}
           <div className="bg-surface-container border border-outline-variant/20 rounded-xl flex flex-col overflow-hidden">
-            <div className="p-6 border-b border-outline-variant/10">
+            <div className="p-6 border-b border-outline-variant/10 flex items-center justify-between gap-4">
               <h4 className="font-headline-sm text-headline-sm text-on-surface">
                 Top Jugadores por Fichas
               </h4>
+              <label className="flex items-center gap-2 text-xs text-on-surface-variant cursor-pointer select-none flex-shrink-0">
+                <input
+                  type="checkbox"
+                  checked={includeBots}
+                  onChange={(e) => setIncludeBots(e.target.checked)}
+                  className="cursor-pointer"
+                />
+                Incluir bots
+              </label>
             </div>
 
             <div className="p-6 space-y-3 overflow-y-auto max-h-[420px]">
