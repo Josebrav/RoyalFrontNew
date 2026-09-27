@@ -1,15 +1,16 @@
 import axios from "axios";
 import API_URL from "../../api/rutaApi";
+import { t } from "../../i18n/strings";
 
 export const validateNickFormat = (nick) => {
     if (!nick) {
-        return "El nombre de usuario es obligatorio.";
+        return t("register.err.nickRequired");
     }
     if (nick.length < 3) {
-        return "El nombre de usuario debe tener al menos 3 caracteres.";
+        return t("register.err.nickTooShort");
     }
     if (nick.length > 20) {
-        return "El nombre de usuario no puede tener más de 20 caracteres.";
+        return t("register.err.nickTooLong");
     }
     return null; // Indica que no hay error
 };
@@ -18,10 +19,10 @@ export const validateEmailFormat = (email) => {
     // Expresión regular para validar un correo electrónico básico
     const regex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
     if (!email) {
-        return "El correo electrónico es obligatorio.";
+        return t("register.err.emailRequired");
     }
     if (!regex.test(email)) {
-        return "El correo electrónico no es válido.";
+        return t("register.err.emailInvalid");
     }
     return null;
 };
@@ -32,7 +33,7 @@ export const validateNickEmailMatch = (nick, email) => {
     if (!nick || !email) return null;
     const localPart = email.split("@")[0];
     if (localPart.toLowerCase() === nick.toLowerCase()) {
-        return "El correo no puede ser igual a tu nombre de usuario.";
+        return t("register.err.emailMatchesNick");
     }
     return null;
 };
@@ -61,7 +62,7 @@ export const validateNick = async (nick) => {
     const formatError = validateNickFormat(nick);
     if (formatError) return formatError;
     const taken = await checkNickAvailability(nick);
-    if (taken) return "Ese nombre de usuario ya está en uso.";
+    if (taken) return t("register.err.nickTaken");
     return null;
 };
 
@@ -71,19 +72,19 @@ export const validateEmail = async (email, nick) => {
     const matchError = validateNickEmailMatch(nick, email);
     if (matchError) return matchError;
     const taken = await checkEmailAvailability(email);
-    if (taken) return "Este correo electrónico ya está registrado.";
+    if (taken) return t("register.err.emailTaken");
     return null;
 };
 
 export const validatePassword = (password) => {
     if (!password) {
-        return "La contraseña es obligatoria.";
+        return t("register.err.passwordRequired");
     }
     if (password.length < 6) {
-        return "La contraseña debe tener al menos 6 caracteres.";
+        return t("register.err.passwordTooShort");
     }
     if (password.length > 15) {
-        return "La contraseña debe tener menos de 15 caracteres.";
+        return t("register.err.passwordTooLong");
     }
     return null;
 };

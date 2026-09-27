@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import { t } from "../../i18n/strings";
 
 export default function LegalPage({ title, updatedAt, intro, sections }) {
   const navigate = useNavigate();
@@ -10,7 +11,7 @@ export default function LegalPage({ title, updatedAt, intro, sections }) {
           <h1 className="text-display-lg md:text-display-lg font-headline-lg text-primary mb-3">
             {title}
           </h1>
-          <p className="text-on-surface-variant text-body-md">Última actualización: {updatedAt}</p>
+          <p className="text-on-surface-variant text-body-md">{t("legal.updatedAt")}: {updatedAt}</p>
         </div>
 
         <section className="bg-surface-container rounded-xl border border-outline-variant/20 p-6 md:p-8">
@@ -35,13 +36,13 @@ export default function LegalPage({ title, updatedAt, intro, sections }) {
               onClick={() => navigate(-1)}
               className="bg-primary text-on-primary font-label-lg px-8 py-3 rounded-xl hover:opacity-90 transition-opacity"
             >
-              Volver
+              {t("legal.back")}
             </button>
             <button
               onClick={() => navigate("/")}
               className="border border-primary text-primary font-label-lg px-8 py-3 rounded-xl hover:bg-primary/10 transition-colors"
             >
-              Ir al Inicio
+              {t("legal.goHome")}
             </button>
           </div>
         </div>

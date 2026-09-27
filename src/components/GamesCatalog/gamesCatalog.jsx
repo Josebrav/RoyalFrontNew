@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { CATEGORY_META, CATEGORY_ORDER, getGamesByCategory } from "../../data/gamesCatalog";
+import { t } from "../../i18n/strings";
 
 function GameRow({ game, compact }) {
   const navigate = useNavigate();
@@ -37,7 +38,7 @@ function GameRow({ game, compact }) {
           </span>
         ) : (
           <span className="inline-block mt-1 text-[9px] font-bold uppercase tracking-wider text-on-surface-variant/70 border border-outline-variant/30 rounded-full px-2 py-0.5">
-            Próximamente
+            {t("catalog.proximamente")}
           </span>
         )}
       </div>
@@ -54,11 +55,11 @@ export default function GamesCatalog({ compact = false }) {
           : "text-3xl md:text-4xl font-extrabold text-white tracking-tighter uppercase mb-2"}
         >
           {compact && <span className="material-symbols-outlined text-primary">apps</span>}
-          Catálogo de Juegos
+          {t("catalog.title")}
         </h2>
         {!compact && (
           <p className="text-on-surface-variant font-light">
-            Explora todos nuestros juegos por categoría. Los que ya están activos, ¡se juegan ahora mismo!
+            {t("catalog.subtitle")}
           </p>
         )}
       </div>
@@ -72,7 +73,7 @@ export default function GamesCatalog({ compact = false }) {
           return (
             <div key={categoryKey} className="break-inside-avoid mb-8">
               <h3 className={`text-xs font-black uppercase tracking-widest mb-3 ${meta.className}`}>
-                {meta.label}
+                {t(`catalog.category.${categoryKey}`)}
               </h3>
               <div className="space-y-1">
                 {games.map((game) => (

@@ -11,6 +11,7 @@ import Swal from "sweetalert2";
 import API_URL from "../../api/rutaApi";
 import { formatChips, swalThemeConfig } from "../../utils/formatters";
 import RankBadge from "../ui/RankBadge/rankBadge";
+import { t } from "../../i18n/strings";
 
 export default function Navbar() {
   const { currentUser } = useSelector((state) => state);
@@ -126,7 +127,7 @@ export default function Navbar() {
                     }`
                   }
                 >
-                  Inicio
+                  {t("nav.inicio")}
                 </NavLink>
 
                 <NavLink
@@ -139,7 +140,7 @@ export default function Navbar() {
                     }`
                   }
                 >
-                  Juegos
+                  {t("nav.juegos")}
                 </NavLink>
 
                 <NavLink
@@ -152,7 +153,7 @@ export default function Navbar() {
                     }`
                   }
                 >
-                  Noticias
+                  {t("nav.noticias")}
                 </NavLink>
               </nav>
             </>
@@ -219,10 +220,10 @@ export default function Navbar() {
           ) : (
             <div className="flex gap-3">
               <Login className="px-6 py-2.5 rounded-sm border border-primary/40 text-primary text-xs font-bold uppercase tracking-widest hover:bg-primary/10 transition-all btn-hover-glow cursor-pointer bg-transparent">
-                Entrar
+                {t("nav.entrar")}
               </Login>
               <RegistroForm className="px-6 py-2.5 rounded-sm gold-gradient text-black text-xs font-bold uppercase tracking-widest transition-all btn-hover-glow cursor-pointer border-0">
-                Registrarse
+                {t("nav.registrarse")}
               </RegistroForm>
             </div>
           )}

@@ -7,6 +7,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { promo1millon, getUserByEmail } from "../../redux/actions";
 import { validateNick, validateEmail, validatePassword } from "./validate";
 import logo from "../../assets/LogoOficial.PNG";
+import { t } from "../../i18n/strings";
 
 const RegistroForm = ({ className, children }) => {
     const navigate = useNavigate();
@@ -105,7 +106,7 @@ const RegistroForm = ({ className, children }) => {
     };
 
     const getPasswordStrength = (val) => {
-        if (!val) return { text: "Débil", color: "text-red-500", bars: [false, false, false, false], barColor: "bg-surface-container-highest" };
+        if (!val) return { text: t("register.strength.weak"), color: "text-red-500", bars: [false, false, false, false], barColor: "bg-surface-container-highest" };
         let score = 0;
         if (val.length > 5) score++;
         if (val.length > 8) score++;
@@ -113,13 +114,13 @@ const RegistroForm = ({ className, children }) => {
         if (/[^A-Za-z0-9]/.test(val)) score++;
 
         if (score <= 1) {
-            return { text: "Débil", color: "text-red-500", bars: [true, false, false, false], barColor: "bg-red-500" };
+            return { text: t("register.strength.weak"), color: "text-red-500", bars: [true, false, false, false], barColor: "bg-red-500" };
         } else if (score === 2) {
-            return { text: "Media", color: "text-amber-500", bars: [true, true, false, false], barColor: "bg-amber-500" };
+            return { text: t("register.strength.medium"), color: "text-amber-500", bars: [true, true, false, false], barColor: "bg-amber-500" };
         } else if (score === 3) {
-            return { text: "Fuerte", color: "text-primary", bars: [true, true, true, false], barColor: "bg-primary" };
+            return { text: t("register.strength.strong"), color: "text-primary", bars: [true, true, true, false], barColor: "bg-primary" };
         } else {
-            return { text: "Élite", color: "text-[#F5D980]", bars: [true, true, true, true], barColor: "bg-[#F5D980]" };
+            return { text: t("register.strength.elite"), color: "text-[#F5D980]", bars: [true, true, true, true], barColor: "bg-[#F5D980]" };
         }
     };
 
@@ -128,7 +129,7 @@ const RegistroForm = ({ className, children }) => {
         const nickError = await validateNick(input.nick);
         const emailError = await validateEmail(input.email, input.nick);
         const passwordError = validatePassword(input.password);
-        const confirmPasswordError = input.password !== input.confirmPassword ? "Las contraseñas no coinciden" : "";
+        const confirmPasswordError = input.password !== input.confirmPassword ? t("register.err.passwordMismatch") : "";
 
         if (nickError || emailError || passwordError || confirmPasswordError || !input.sexo) {
             setErrors({
@@ -136,7 +137,7 @@ const RegistroForm = ({ className, children }) => {
                 email: emailError || "",
                 password: passwordError || "",
                 confirmPassword: confirmPasswordError || "",
-                sexo: input.sexo ? "" : "Debe seleccionar un genero",
+                sexo: input.sexo ? "" : t("register.err.sexoRequired"),
             });
             return;
         }
@@ -154,12 +155,12 @@ const RegistroForm = ({ className, children }) => {
 
             if (signupResult?.firstChipsReceived) {
                 Swal.fire(
-                    "¡Felicidades!",
-                    "¡Ganaste 1,000,000 de fichas por ser uno de los primeros 100 usuarios!",
+                    t("login.firstChipsTitle"),
+                    t("login.firstChipsText"),
                     "success"
                 );
             } else {
-                Swal.fire("¡Éxito!", "Tu cuenta ha sido creada exitosamente", "success");
+                Swal.fire(t("register.successTitle"), t("register.successText"), "success");
             }
 
             setIsRegisterOpen(false);
@@ -170,14 +171,14 @@ const RegistroForm = ({ className, children }) => {
             if (error?.statusCode === 409) {
                 const message = error.message || "";
                 if (/email/i.test(message)) {
-                    setErrors((prev) => ({ ...prev, email: "Este correo electrónico ya está registrado." }));
+                    setErrors((prev) => ({ ...prev, email: t("register.err.emailTaken") }));
                 }
                 if (/nick/i.test(message)) {
-                    setErrors((prev) => ({ ...prev, nick: "Ese nombre de usuario ya está en uso." }));
+                    setErrors((prev) => ({ ...prev, nick: t("register.err.nickTaken") }));
                 }
-                Swal.fire("Oops...", "Ese usuario o correo ya está en uso.", "error");
+                Swal.fire(t("register.errorTitle"), t("register.errorDuplicate"), "error");
             } else {
-                Swal.fire("Oops...", "Hubo un error en el registro", "error");
+                Swal.fire(t("register.errorTitle"), t("register.errorGeneric"), "error");
             }
         }
     };
@@ -195,7 +196,7 @@ const RegistroForm = ({ className, children }) => {
                 type="button"
                 className={className || "px-4 py-2 rounded-lg gold-gradient text-on-primary font-label-lg text-label-lg font-bold hover:opacity-90 transition-all shadow-sm cursor-pointer"}
             >
-                {children || "Registrarse"}
+                {children || t("nav.registrarse")}
             </button>
 
             {isRegisterOpen && createPortal(
@@ -233,18 +234,18 @@ const RegistroForm = ({ className, children }) => {
                                 <div className="absolute inset-0 bg-primary/20 blur-xl rounded-full -z-10"></div>
                                 <img alt="Logo RGAMES" className="h-12 w-auto mb-3 object-contain drop-shadow-[0_0_18px_rgba(201,168,76,0.35)]" src={logo} />
                             </div>
-                            <h1 className="font-headline-sm text-headline-sm text-on-surface tracking-tight">Crea tu cuenta</h1>
-                            <p className="text-[12px] text-on-surface-variant mt-0.5">Únete a la mayor comunidad de jugadores, increibles premios te esperan</p>
+                            <h1 className="font-headline-sm text-headline-sm text-on-surface tracking-tight">{t("register.title")}</h1>
+                            <p className="text-[12px] text-on-surface-variant mt-0.5">{t("register.subtitle")}</p>
                         </div>
 
                         {/* Form */}
                         <form onSubmit={handleSubmit} className="px-6 pb-6 pt-4 space-y-3.5 relative z-10" id="registrationForm">
                             {/* Username / Full Name */}
                             <div className="space-y-1">
-                                <label className="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider text-[11px]">Nombre de Usuario</label>
+                                <label className="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider text-[11px]">{t("register.nickLabel")}</label>
                                 <input
                                     className="w-full bg-[#0A0A0F] border border-[#2A2A36] rounded-lg py-2 px-3 text-on-surface font-body-md transition-all text-sm"
-                                    placeholder="Nombre de usuario"
+                                    placeholder={t("register.nickPlaceholder")}
                                     required
                                     type="text"
                                     name="nick"
@@ -255,16 +256,16 @@ const RegistroForm = ({ className, children }) => {
                                 {errors.nick ? (
                                     <p className="text-red-500 text-[11px] mt-0.5">{errors.nick}</p>
                                 ) : checking.nick ? (
-                                    <p className="text-on-surface-variant text-[11px] mt-0.5">Verificando disponibilidad...</p>
+                                    <p className="text-on-surface-variant text-[11px] mt-0.5">{t("register.checkingAvailability")}</p>
                                 ) : null}
                             </div>
 
                             {/* Email */}
                             <div className="space-y-1">
-                                <label className="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider text-[11px]">Correo Electrónico</label>
+                                <label className="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider text-[11px]">{t("register.emailLabel")}</label>
                                 <input
                                     className="w-full bg-[#0A0A0F] border border-[#2A2A36] rounded-lg py-2 px-3 text-on-surface font-body-md transition-all text-sm"
-                                    placeholder="Correo electrónico"
+                                    placeholder={t("register.emailPlaceholder")}
                                     required
                                     type="email"
                                     name="email"
@@ -275,7 +276,7 @@ const RegistroForm = ({ className, children }) => {
                                 {errors.email ? (
                                     <p className="text-red-500 text-[11px] mt-0.5">{errors.email}</p>
                                 ) : checking.email ? (
-                                    <p className="text-on-surface-variant text-[11px] mt-0.5">Verificando disponibilidad...</p>
+                                    <p className="text-on-surface-variant text-[11px] mt-0.5">{t("register.checkingAvailability")}</p>
                                 ) : null}
                             </div>
 
@@ -283,12 +284,12 @@ const RegistroForm = ({ className, children }) => {
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                 {/* Password */}
                                 <div className="space-y-1 relative">
-                                    <label className="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider text-[11px]">Contraseña</label>
+                                    <label className="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider text-[11px]">{t("register.passwordLabel")}</label>
                                     <div className="relative">
                                         <input
                                             className="w-full bg-[#0A0A0F] border border-[#2A2A36] rounded-lg py-2 px-3 pr-8 text-on-surface font-body-md transition-all text-sm"
                                             id="password"
-                                            placeholder="Contraseña"
+                                            placeholder={t("register.passwordPlaceholder")}
                                             required
                                             type={showPassword ? "text" : "password"}
                                             name="password"
@@ -309,12 +310,12 @@ const RegistroForm = ({ className, children }) => {
                                 </div>
                                 {/* Confirm Password */}
                                 <div className="space-y-1 relative">
-                                    <label className="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider text-[11px]">Confirmar Contraseña</label>
+                                    <label className="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider text-[11px]">{t("register.confirmPasswordLabel")}</label>
                                     <div className="relative">
                                         <input
                                             className="w-full bg-[#0A0A0F] border border-[#2A2A36] rounded-lg py-2 px-3 pr-8 text-on-surface font-body-md transition-all text-sm"
                                             id="confirm_password"
-                                            placeholder="Confirmar"
+                                            placeholder={t("register.confirmPasswordPlaceholder")}
                                             required
                                             type={showConfirmPassword ? "text" : "password"}
                                             name="confirmPassword"
@@ -338,7 +339,7 @@ const RegistroForm = ({ className, children }) => {
                             {/* Password Strength Meter */}
                             <div className="space-y-1">
                                 <div className="flex justify-between items-center">
-                                    <span className="text-[11px] text-on-surface-variant">Seguridad de la Contraseña</span>
+                                    <span className="text-[11px] text-on-surface-variant">{t("register.passwordStrengthLabel")}</span>
                                     <span className={`text-[11px] font-bold ${strength.color}`}>{strength.text}</span>
                                 </div>
                                 <div className="flex gap-1 h-0.5 w-full">
@@ -355,7 +356,7 @@ const RegistroForm = ({ className, children }) => {
 
                             {/* Gender (Sexo) */}
                             <div className="space-y-1">
-                                <label className="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider text-[11px]">Género</label>
+                                <label className="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider text-[11px]">{t("register.genderLabel")}</label>
                                 <select
                                     className="w-full bg-[#0A0A0F] border border-[#2A2A36] rounded-lg py-2 px-3 text-on-surface font-body-md transition-all cursor-pointer text-sm"
                                     required
@@ -363,9 +364,9 @@ const RegistroForm = ({ className, children }) => {
                                     value={input.sexo}
                                     onChange={handleInputChange}
                                 >
-                                    <option disabled value="">Selecciona tu género</option>
-                                    <option value="H">Hombre</option>
-                                    <option value="M">Mujer</option>
+                                    <option disabled value="">{t("register.genderPlaceholder")}</option>
+                                    <option value="H">{t("register.genderMale")}</option>
+                                    <option value="M">{t("register.genderFemale")}</option>
                                 </select>
                                 {errors.sexo && <p className="text-red-500 text-[11px] mt-0.5">{errors.sexo}</p>}
                             </div>
@@ -373,11 +374,11 @@ const RegistroForm = ({ className, children }) => {
                             {/* Referral Code (optional) */}
                             <div className="space-y-1">
                                 <label className="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider text-[11px]">
-                                    Código de Referido (opcional)
+                                    {t("register.referralLabel")}
                                 </label>
                                 <input
                                     className="w-full bg-[#0A0A0F] border border-[#2A2A36] rounded-lg py-2 px-3 text-on-surface font-body-md transition-all text-sm uppercase"
-                                    placeholder="Ej: A1B2C3D4"
+                                    placeholder={t("register.referralPlaceholder")}
                                     type="text"
                                     name="referredByCode"
                                     value={input.referredByCode}
@@ -398,7 +399,7 @@ const RegistroForm = ({ className, children }) => {
                                         />
                                     </div>
                                     <span className="font-body-sm text-[12px] text-on-surface-variant group-hover:text-on-surface transition-colors select-none">
-                                        He leído y acepto los{" "}
+                                        {t("register.termsPrefix")}{" "}
                                         <a
                                             className="text-primary hover:underline font-bold"
                                             href="/terminos-y-condiciones"
@@ -409,7 +410,7 @@ const RegistroForm = ({ className, children }) => {
                                                 navigate("/terminos-y-condiciones");
                                             }}
                                         >
-                                            términos y condiciones
+                                            {t("register.termsLink")}
                                         </a>
                                     </span>
                                 </label>
@@ -420,12 +421,12 @@ const RegistroForm = ({ className, children }) => {
                                 className="royal-gold-gradient royal-gold-glow w-full py-2.5 px-4 rounded-lg text-[#0A0A0F] font-bold text-sm transition-transform active:scale-95 duration-150 uppercase tracking-wider cursor-pointer"
                                 type="submit"
                             >
-                                Crear Cuenta
+                                {t("register.submit")}
                             </button>
 
                             {/* Footer Link */}
                             <p className="text-center font-body-sm text-[12px] text-on-surface-variant pt-1">
-                                Ya tenes una cuenta?{" "}
+                                {t("register.alreadyHaveAccount")}{" "}
                                 <a
                                     className="text-primary font-bold hover:underline cursor-pointer"
                                     href="#"
@@ -435,7 +436,7 @@ const RegistroForm = ({ className, children }) => {
                                         window.dispatchEvent(new Event("open-login-modal"));
                                     }}
                                 >
-                                    Entrar
+                                    {t("register.login")}
                                 </a>
                             </p>
                         </form>

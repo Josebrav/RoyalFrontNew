@@ -22,6 +22,7 @@ import { GAMES_CATALOG, CATEGORY_META, getGameByPlayPath, getGameBySlug } from "
 import { generateFakeOnlinePlayers } from "../../data/fakeOnlinePlayers";
 import API_URL from "../../api/rutaApi";
 import { useAuth } from "../../context/oauthContext";
+import { t } from "../../i18n/strings";
 
 const SIMULATED_ONLINE_MIN = 18;
 const SIMULATED_ONLINE_MAX = 34;
@@ -776,20 +777,21 @@ export default function Home() {
             <EditableText
               contentKey="home.heroTagline"
               className="text-on-surface-variant text-lg md:text-xl font-light tracking-tight mb-6"
+              translations={{ en: "The best games site", pt: "A melhor página de jogos" }}
             >
               La mejor pagina de juegos
             </EditableText>
             <div className="flex flex-col items-center gap-6 relative">
               <div className="flex flex-col sm:flex-row items-center justify-center gap-6">
                 <RegistroForm className="px-14 py-5 rounded-full gold-gradient text-black font-bold text-sm uppercase tracking-[0.2em] shadow-2xl btn-hover-glow transition-all cursor-pointer border-0">
-                  Crear Cuenta
+                  {t("home.crearCuenta")}
                 </RegistroForm>
 
                 <button
                   onClick={() => window.dispatchEvent(new Event('open-login-modal'))}
                   className="px-14 py-5 rounded-full border-2 border-primary/50 text-primary font-bold text-sm uppercase tracking-[0.2em] hover:bg-primary/5 transition-all cursor-pointer bg-transparent"
                 >
-                  Iniciar Sesión
+                  {t("home.iniciarSesion")}
                 </button>
               </div>
 
@@ -797,7 +799,7 @@ export default function Home() {
                 onClick={() => navigate('/?vista=invitado')}
                 className="px-14 py-3 rounded-full text-on-surface-variant font-bold text-sm uppercase tracking-[0.2em] hover:text-primary transition-all cursor-pointer bg-transparent border-0"
               >
-                Entrar como Invitado
+                {t("home.entrarInvitado")}
               </button>
             </div>
           </div>
@@ -815,11 +817,11 @@ export default function Home() {
                   return (
                     <div key={`${dup}-${win.id || i}`} className="flex items-center gap-4 whitespace-nowrap">
                       <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
-                      <span className="text-on-surface-variant font-medium">El jugador <span className="text-primary font-bold">{win.nick}</span> ganó</span>
+                      <span className="text-on-surface-variant font-medium">{t("home.tickerJugador")} <span className="text-primary font-bold">{win.nick}</span> {t("home.tickerGano")}</span>
                       <span className="text-white font-bold bg-white/5 px-3 py-1 rounded border border-white/10">
-                        {new Intl.NumberFormat('es-ES').format(win.amount)} fichas
+                        {new Intl.NumberFormat('es-ES').format(win.amount)} {t("home.tickerFichas")}
                       </span>
-                      <span className="text-on-surface-variant/80 text-xs">en {gameName}</span>
+                      <span className="text-on-surface-variant/80 text-xs">{t("home.tickerEn")} {gameName}</span>
                     </div>
                   );
                 })}
@@ -837,30 +839,66 @@ export default function Home() {
         <div className="max-w-container-max mx-auto grid grid-cols-1 md:grid-cols-3 gap-20">
           <div className="text-center reveal" style={{ transitionDelay: "0.1s" }}>
             <span className="material-symbols-outlined text-primary text-5xl mb-6">casino</span>
-            <EditableText contentKey="home.why1.title" as="h4" className="text-white font-bold text-xl mb-4 tracking-tight">
+            <EditableText
+              contentKey="home.why1.title"
+              as="h4"
+              className="text-white font-bold text-xl mb-4 tracking-tight"
+              translations={{ en: "Clean, Fair Play", pt: "Jogo Limpo e Justo" }}
+            >
               Juego Limpio y Parejo
             </EditableText>
-            <EditableText contentKey="home.why1.text" className="text-on-surface-variant font-light text-sm leading-relaxed">
+            <EditableText
+              contentKey="home.why1.text"
+              className="text-on-surface-variant font-light text-sm leading-relaxed"
+              translations={{
+                en: "Results are always random, the same for everyone. This is about having fun, no house tricks.",
+                pt: "Os resultados são sempre aleatórios, iguais para todos. Aqui se joga por diversão, sem truques da casa.",
+              }}
+            >
               Los resultados son siempre al azar, iguales para todos. Acá se juega por diversión, sin trampas de la casa.
             </EditableText>
           </div>
 
           <div className="text-center reveal" style={{ transitionDelay: "0.2s" }}>
             <span className="material-symbols-outlined text-primary text-5xl mb-6">shield_lock</span>
-            <EditableText contentKey="home.why2.title" as="h4" className="text-white font-bold text-xl mb-4 tracking-tight">
+            <EditableText
+              contentKey="home.why2.title"
+              as="h4"
+              className="text-white font-bold text-xl mb-4 tracking-tight"
+              translations={{ en: "Your Account, Secure", pt: "Sua Conta, Segura" }}
+            >
               Tu Cuenta, Segura
             </EditableText>
-            <EditableText contentKey="home.why2.text" className="text-on-surface-variant font-light text-sm leading-relaxed">
+            <EditableText
+              contentKey="home.why2.text"
+              className="text-on-surface-variant font-light text-sm leading-relaxed"
+              translations={{
+                en: "We protect your data and progress with good security practices, so all you have to worry about is playing.",
+                pt: "Cuidamos dos seus dados e do seu progresso com boas práticas de segurança, para que você só precise se preocupar em jogar.",
+              }}
+            >
               Cuidamos tus datos y tu progreso con buenas prácticas de seguridad, para que solo te preocupes por jugar.
             </EditableText>
           </div>
 
           <div className="text-center reveal" style={{ transitionDelay: "0.3s" }}>
             <span className="material-symbols-outlined text-primary text-5xl mb-6">support_agent</span>
-            <EditableText contentKey="home.why3.title" as="h4" className="text-white font-bold text-xl mb-4 tracking-tight">
+            <EditableText
+              contentKey="home.why3.title"
+              as="h4"
+              className="text-white font-bold text-xl mb-4 tracking-tight"
+              translations={{ en: "We're Always With You", pt: "Estamos Sempre com Você" }}
+            >
               Te Acompañamos Siempre
             </EditableText>
-            <EditableText contentKey="home.why3.text" className="text-on-surface-variant font-light text-sm leading-relaxed">
+            <EditableText
+              contentKey="home.why3.text"
+              className="text-on-surface-variant font-light text-sm leading-relaxed"
+              translations={{
+                en: "Questions or an issue? Our real team is one message away — send us your query and we'll respond right away.",
+                pt: "Dúvidas ou algum problema? Nossa equipe de verdade está a uma mensagem de distância, mande sua consulta e responderemos rapidinho.",
+              }}
+            >
               ¿Dudas o algún problema? Nuestro equipo real está a un mensaje de distancia, mandanos tu consulta y responderemos enseguida.
             </EditableText>
           </div>
@@ -874,7 +912,7 @@ export default function Home() {
           className="text-primary flex flex-col items-center gap-1 text-[11px] active:scale-90 transition-transform duration-200 bg-transparent border-0 cursor-pointer"
         >
           <span className="material-symbols-outlined">home</span>
-          <span>Inicio</span>
+          <span>{t("home.bottomNavInicio")}</span>
         </button>
 
         <button
@@ -882,7 +920,7 @@ export default function Home() {
           className="text-on-surface-variant hover:text-primary flex flex-col items-center gap-1 text-[11px] active:scale-90 transition-transform duration-200 bg-transparent border-0 cursor-pointer"
         >
           <span className="material-symbols-outlined">casino</span>
-          <span>Juegos</span>
+          <span>{t("home.bottomNavJuegos")}</span>
         </button>
 
         <button
@@ -890,12 +928,12 @@ export default function Home() {
           className="text-on-surface-variant hover:text-primary flex flex-col items-center gap-1 text-[11px] active:scale-90 transition-transform duration-200 bg-transparent border-0 cursor-pointer"
         >
           <span className="material-symbols-outlined">search</span>
-          <span>Buscar</span>
+          <span>{t("home.bottomNavBuscar")}</span>
         </button>
 
         <Login className="text-on-surface-variant hover:text-primary flex flex-col items-center gap-1 text-[11px] active:scale-90 transition-transform duration-200 bg-transparent border-0 p-0 font-normal cursor-pointer">
           <span className="material-symbols-outlined">login</span>
-          <span>Acceder</span>
+          <span>{t("home.bottomNavAcceder")}</span>
         </Login>
       </nav>
     </div>

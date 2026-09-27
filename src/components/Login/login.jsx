@@ -7,6 +7,7 @@ import Swal from "sweetalert2";
 import axios from "axios";
 import API_URL from "../../api/rutaApi";
 import { swalThemeConfig } from "../../utils/formatters";
+import { t } from "../../i18n/strings";
 
 // Flag a nivel de módulo: garantiza que initialize() corra solo una vez por carga de página
 // (resiste React StrictMode que ejecuta efectos dos veces en desarrollo)
@@ -19,15 +20,15 @@ let gsiInitialized = false;
  * esto se mostraba como "Contraseña incorrecta", lo que confundía a usuarios y a soporte.
  */
 const getLoginErrorMessage = (error) => {
-    if (!error) return "No pudimos iniciar sesión. Intentá de nuevo.";
+    if (!error) return t("login.err.generic");
 
     // axios sin respuesta del servidor -> error.message es un string
     if (typeof error === "string") {
         if (/network|failed to fetch/i.test(error)) {
-            return "No pudimos conectar con el servidor. Revisá tu conexión e intentá de nuevo.";
+            return t("login.err.network");
         }
         if (/timeout/i.test(error)) {
-            return "El servidor tardó demasiado en responder. Probá de nuevo en un momento.";
+            return t("login.err.timeout");
         }
         return error;
     }
@@ -41,13 +42,13 @@ const getLoginErrorMessage = (error) => {
     if (status === 401) {
         // El backend avisa aparte cuando la cuenta se creó con Google (sin password)
         if (backendMsg && /google/i.test(backendMsg)) return backendMsg;
-        return "Email/usuario o contraseña incorrectos.";
+        return t("login.err.401");
     }
-    if (status === 403) return backendMsg || "Tu cuenta no tiene permiso para ingresar.";
-    if (status === 404) return "No encontramos una cuenta con esos datos.";
-    if (status >= 500) return "El servidor tuvo un problema. Probá de nuevo en unos minutos.";
+    if (status === 403) return backendMsg || t("login.err.403");
+    if (status === 404) return t("login.err.404");
+    if (status >= 500) return t("login.err.500");
 
-    return backendMsg || "No pudimos iniciar sesión. Intentá de nuevo.";
+    return backendMsg || t("login.err.generic");
 };
 
 export default function Login({ className, children }) {
@@ -83,7 +84,7 @@ export default function Login({ className, children }) {
             Swal.fire({
                 position: "center",
                 icon: "success",
-                title: "¡Inicio de sesión exitoso!",
+                title: t("login.successTitle"),
                 showConfirmButton: false,
                 timer: 2500,
             });
@@ -92,7 +93,7 @@ export default function Login({ className, children }) {
             console.error("Error al iniciar sesión:", error);
             Swal.fire({
                 icon: "error",
-                title: "No pudimos iniciar sesión",
+                title: t("login.errorTitle"),
                 text: getLoginErrorMessage(error),
                 ...swalThemeConfig,
             });
@@ -112,17 +113,17 @@ export default function Login({ className, children }) {
             use_fedcm_for_prompt: false,
             callback: async (response) => {
                 try {
-                    Swal.fire({ title: "Iniciando sesión con Google...", allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+                    Swal.fire({ title: t("login.googleLoadingTitle"), allowOutsideClick: false, didOpen: () => Swal.showLoading() });
                     const result = await auth.loginWithGoogle(response.credential);
                     setIsLoginOpen(false);
                     navigate('/');
                     if (result?.firstChipsReceived) {
-                        Swal.fire("¡Felicidades!", "¡Ganaste 1,000,000 de fichas por ser uno de los primeros 100 usuarios!", "success");
+                        Swal.fire(t("login.firstChipsTitle"), t("login.firstChipsText"), "success");
                     } else {
-                        Swal.fire({ position: "center", icon: "success", title: "¡Inicio de sesión exitoso!", showConfirmButton: false, timer: 2500 });
+                        Swal.fire({ position: "center", icon: "success", title: t("login.successTitle"), showConfirmButton: false, timer: 2500 });
                     }
                 } catch (error) {
-                    Swal.fire({ icon: "error", title: "Error con Google", text: error?.message || "No se pudo completar el inicio de sesión.", confirmButtonColor: "#C9A84C" });
+                    Swal.fire({ icon: "error", title: t("login.googleErrorTitle"), text: error?.message || t("login.googleErrorText"), confirmButtonColor: "#C9A84C" });
                 }
             },
         });
@@ -189,7 +190,7 @@ export default function Login({ className, children }) {
             type="button"
             className={className || "px-4 py-2 rounded-lg border border-primary text-primary font-label-lg text-label-lg hover:bg-primary/10 transition-all font-bold cursor-pointer"}
           >
-            {children || "Iniciar sesión"}
+            {children || t("login.openButton")}
           </button>
     
           {/* Fondo oscuro y cuadro de inicio de sesión */}
@@ -226,10 +227,10 @@ export default function Login({ className, children }) {
                     <img alt="Logo RGAMES" className="w-full h-auto object-contain drop-shadow-[0_0_18px_rgba(201,168,76,0.35)]" src={logo} />
                   </div>
                   <h2 className="font-headline-lg text-headline-lg text-on-surface tracking-tight text-center">
-                    Bienvenido de nuevo
+                    {t("login.title")}
                   </h2>
                   <p className="mt-2 font-body-md text-body-md text-on-surface-variant text-center">
-                    El lounge de juego de élite te espera.
+                    {t("login.subtitle")}
                   </p>
                 </div>
 
@@ -239,7 +240,7 @@ export default function Login({ className, children }) {
                     {/* Email / Nickname Field */}
                     <div className="space-y-2">
                       <label className="block font-label-lg text-label-lg text-on-surface-variant" htmlFor="email">
-                        Correo Electrónico o Nombre de Usuario
+                        {t("login.emailLabel")}
                       </label>
                       <div className="relative">
                         <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -250,7 +251,7 @@ export default function Login({ className, children }) {
                           className="block w-full pl-10 pr-3 py-3 bg-surface-container-lowest border border-outline-variant/30 rounded text-on-surface placeholder-outline focus:outline-none focus:ring-1 focus:ring-primary focus:border-primary font-body-md transition-all duration-200"
                           id="email"
                           name="email"
-                          placeholder="Ingresa tu Nick o Email"
+                          placeholder={t("login.emailPlaceholder")}
                           required
                           type="text"
                           value={input.email}
@@ -262,7 +263,7 @@ export default function Login({ className, children }) {
                     {/* Password Field */}
                     <div className="space-y-2">
                       <label className="block font-label-lg text-label-lg text-on-surface-variant" htmlFor="password">
-                        Contraseña
+                        {t("login.passwordLabel")}
                       </label>
                       <div className="relative">
                         <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -301,7 +302,7 @@ export default function Login({ className, children }) {
                           type="checkbox"
                         />
                         <label className="ml-2 block font-label-md text-label-md text-on-surface-variant cursor-pointer" htmlFor="remember-me">
-                          Recuerdame
+                          {t("login.rememberMe")}
                         </label>
                       </div>
                       <div className="text-sm">
@@ -311,16 +312,16 @@ export default function Login({ className, children }) {
                           onClick={async (e) => {
                             e.preventDefault();
                             const result = await Swal.fire({
-                              title: "Recuperar Contraseña",
-                              text: "Ingresá el email de tu cuenta y te mandamos un enlace para restablecer tu contraseña.",
+                              title: t("login.forgotTitle"),
+                              text: t("login.forgotText"),
                               input: "email",
                               inputPlaceholder: "tu@email.com",
                               showCancelButton: true,
-                              confirmButtonText: "Enviar",
-                              cancelButtonText: "Cancelar",
+                              confirmButtonText: t("login.forgotSend"),
+                              cancelButtonText: t("login.forgotCancel"),
                               ...swalThemeConfig,
                               inputValidator: (value) => {
-                                if (!value) return "Ingresá tu email";
+                                if (!value) return t("login.forgotValidator");
                               },
                             });
                             if (!result.isConfirmed || !result.value) return;
@@ -330,14 +331,14 @@ export default function Login({ className, children }) {
                               // El backend siempre responde genérico; si falla la request en sí, igual mostramos el mismo mensaje.
                             }
                             Swal.fire({
-                              title: "Revisá tu correo",
-                              text: "Si el email existe en nuestra plataforma, vas a recibir un enlace para restablecer tu contraseña.",
+                              title: t("login.forgotCheckEmailTitle"),
+                              text: t("login.forgotCheckEmailText"),
                               icon: "info",
                               ...swalThemeConfig,
                             });
                           }}
                         >
-                          ¿Olvidaste tu contraseña?
+                          {t("login.forgotPassword")}
                         </a>
                       </div>
                     </div>
@@ -348,7 +349,7 @@ export default function Login({ className, children }) {
                         className="gold-gradient gold-glow gold-glow-hover w-full flex justify-center py-3.5 px-4 border border-transparent rounded-lg font-headline-sm text-headline-sm text-on-primary-fixed uppercase tracking-wider transition-all duration-300 transform active:scale-[0.98] cursor-pointer"
                         type="submit"
                       >
-                        Entrar
+                        {t("login.submit")}
                       </button>
                     </div>
                   </form>
@@ -360,7 +361,7 @@ export default function Login({ className, children }) {
                     </div>
                     <div className="relative flex justify-center text-sm">
                       <span className="px-4 bg-[#12121A] text-on-surface-variant font-label-md uppercase tracking-widest">
-                        o
+                        {t("login.or")}
                       </span>
                     </div>
                   </div>
@@ -377,13 +378,13 @@ export default function Login({ className, children }) {
 
                 {/* Footer Link */}
                 <p className="mt-8 text-center font-body-md text-body-md text-on-surface-variant relative z-10">
-                  ¿Nuevo por aquí?{" "}
+                  {t("login.newHere")}{" "}
                   <a
                     className="font-bold text-primary hover:text-primary-fixed transition-colors underline-offset-4 hover:underline"
                     href="#"
                     onClick={handleRegister}
                   >
-                    Crear Cuenta
+                    {t("login.createAccount")}
                   </a>
                 </p>
               </div>

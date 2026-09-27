@@ -2,16 +2,24 @@ import { useDispatch, useSelector } from "react-redux";
 import Swal from "sweetalert2";
 import { updateSiteContentText } from "../../redux/actions";
 import { swalThemeConfig } from "../../utils/formatters";
+import { LOCALE } from "../../i18n/locale";
 
 // Wraps a static text block so admins/mods see a small "Editar" pencil next to it and can
 // change it in place. Everyone else (and the DB, until someone edits it) just sees `children`
 // as-is — only overrides are persisted server-side (see redux siteContent slice).
-export default function EditableText({ contentKey, children, as: Tag = "p", className = "" }) {
+//
+// Locale-aware: en los sitios en inglés/portugués (VITE_SITE_LOCALE), busca un override guardado
+// bajo `${contentKey}.${LOCALE}` (así editarlo en inglés no pisa la versión en español) y, si no
+// hay ninguno todavía, usa `translations[LOCALE]` como default en vez de `children` (que siempre
+// es el español). Sin ese prop, o en el sitio en español, se comporta exactamente igual que antes.
+export default function EditableText({ contentKey, children, translations, as: Tag = "p", className = "" }) {
   const dispatch = useDispatch();
   const currentUser = useSelector((state) => state.currentUser);
-  const override = useSelector((state) => state.siteContent[contentKey]);
+  const effectiveKey = LOCALE === "es" ? contentKey : `${contentKey}.${LOCALE}`;
+  const override = useSelector((state) => state.siteContent[effectiveKey]);
   const canEdit = currentUser?.role === "admin" || currentUser?.role === "mod";
-  const text = override?.type === "text" ? override.text : children;
+  const defaultText = LOCALE === "es" ? children : (translations?.[LOCALE] ?? children);
+  const text = override?.type === "text" ? override.text : defaultText;
 
   if (!canEdit) {
     return <Tag className={className}>{text}</Tag>;
@@ -34,7 +42,7 @@ export default function EditableText({ contentKey, children, as: Tag = "p", clas
     });
     if (value === undefined) return;
     try {
-      await dispatch(updateSiteContentText(contentKey, value));
+      await dispatch(updateSiteContentText(effectiveKey, value));
     } catch (error) {
       Swal.fire({ title: "Error", text: "No se pudo guardar el cambio.", icon: "error", ...swalThemeConfig });
     }

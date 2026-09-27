@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import rgamesLogo from '../../assets/rgames.png';
+import { t } from '../../i18n/strings';
 
 function Footer() {
   return (
@@ -13,40 +14,40 @@ function Footer() {
             src={rgamesLogo}
           />
           <p className="text-on-surface-variant text-sm font-light leading-relaxed mb-6">
-            Jugá, subí de rango y disfrutá con fichas virtuales en un lugar pensado para pasarla bien y divertirse con tus amigos.
+            {t("footer.tagline")}
           </p>
         </div>
 
         {/* Links grid */}
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-12 text-sm uppercase tracking-widest font-bold">
           <div className="flex flex-col gap-4">
-            <h5 className="text-white mb-2 font-black">Conserjería</h5>
+            <h5 className="text-white mb-2 font-black">{t("footer.conserjeria")}</h5>
             <Link className="text-on-surface-variant hover:text-primary transition-colors normal-case font-normal" to="/contacto">
-              Contacto
+              {t("footer.contacto")}
             </Link>
             <Link className="text-on-surface-variant hover:text-primary transition-colors normal-case font-normal" to="/preguntas-frecuentes">
-              Preguntas Frecuentes
+              {t("footer.faq")}
             </Link>
             <Link className="text-on-surface-variant hover:text-primary transition-colors normal-case font-normal" to="/ayuda">
-              Mesa de Ayuda
+              {t("footer.ayuda")}
             </Link>
           </div>
           <div className="flex flex-col gap-4">
-            <h5 className="text-white mb-2 font-black">Protocolo</h5>
+            <h5 className="text-white mb-2 font-black">{t("footer.protocolo")}</h5>
             <Link className="text-on-surface-variant hover:text-primary transition-colors normal-case font-normal" to="/privacidad">
-              Privacidad
+              {t("footer.privacidad")}
             </Link>
             <Link className="text-on-surface-variant hover:text-primary transition-colors normal-case font-normal" to="/terminos-y-condiciones">
-              Términos
+              {t("footer.terminos")}
             </Link>
             <Link className="text-on-surface-variant hover:text-primary transition-colors normal-case font-normal" to="/cumplimiento">
-              Cumplimiento
+              {t("footer.cumplimiento")}
             </Link>
           </div>
           <div className="flex flex-col gap-4">
-            <h5 className="text-white mb-2 font-black">Empresa</h5>
+            <h5 className="text-white mb-2 font-black">{t("footer.empresa")}</h5>
             <Link className="text-on-surface-variant hover:text-primary transition-colors normal-case font-normal" to="/trabaja-con-nosotros">
-              Trabaja con Nosotros
+              {t("footer.trabaja")}
             </Link>
           </div>
         </div>
@@ -54,7 +55,7 @@ function Footer() {
 
       {/* Footer bottom bar */}
       <div className="max-w-container-max mx-auto mt-20 pt-10 border-t border-white/5 flex flex-col md:flex-row justify-between items-center gap-6 text-xs text-on-surface-variant font-bold tracking-widest uppercase">
-        <p>© 2026 RGAMES. Todos los Derechos Reservados.</p>
+        <p>{t("footer.rights")}</p>
       </div>
     </footer>
   );

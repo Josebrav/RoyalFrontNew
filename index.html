@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" class="dark">
+<html lang="es" class="dark">
   <head>
     <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6569283873873097"
      crossorigin="anonymous"></script>
@@ -34,6 +34,13 @@
         }
       }
       initPayPalScript();
+
+      // Sitios en inglés/portugués (VITE_SITE_LOCALE) corrigen el lang del documento acá — el
+      // atributo estático de arriba queda en "es" (el sitio real en producción) por default.
+      const siteLocale = import.meta.env.VITE_SITE_LOCALE;
+      if (siteLocale && siteLocale !== "es") {
+        document.documentElement.lang = siteLocale;
+      }
     </script>
   </body>
 </html>
