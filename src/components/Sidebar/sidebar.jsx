@@ -43,6 +43,7 @@ export default function Sidebar() {
     { to: "/admin/prizes", icon: "emoji_events", label: "Premios", color: "#a855f7" },
     { to: "/admin/referrals", icon: "diversity_3", label: "Referidos", color: "#2dd4bf" },
     { to: "/admin/trophies", icon: "military_tech", label: "Trofeos", color: "#4f8fe0" },
+    { to: "/admin/game-images", icon: "photo_library", label: "Imágenes de Juegos", color: "#4caf7d" },
     // Palanca de la economía de la casa — admin-only, igual que "Cargas" arriba.
     ...(currentUser?.role === "admin" ? [{ to: "/admin/bingo-bots", icon: "smart_toy", label: "Bots", color: "#a855f7" }] : []),
   ];

@@ -36,6 +36,7 @@ import BingoBots from './components/AdminPanel/BingoBots/bingoBots';
 import MinesBots from './components/AdminPanel/MinesBots/minesBots';
 import UnityBots from './components/AdminPanel/UnityBots/unityBots';
 import Trophies from './components/AdminPanel/Trophies/trophies';
+import GameImages from './components/AdminPanel/GameImages/gameImages';
 import ResetPassword from './components/ResetPassword/resetPassword';
 import ProtectedRoute from './components/ProtectedRoute/ProtectedRoute';
 import RequireAuth from './components/ProtectedRoute/RequireAuth';
@@ -164,6 +165,7 @@ function App() {
             <Route path="/admin/mines-bots" element={<ProtectedRoute><MinesBots /></ProtectedRoute>} />
             <Route path="/admin/unity-bots" element={<ProtectedRoute><UnityBots /></ProtectedRoute>} />
             <Route path="/admin/trophies" element={<ProtectedRoute><Trophies /></ProtectedRoute>} />
+            <Route path="/admin/game-images" element={<ProtectedRoute><GameImages /></ProtectedRoute>} />
             <Route path="/noticias" element={<News />} />
             <Route path="/about" element={<AboutUs />} />
             <Route path="/terminos-y-condiciones" element={<TermsAndConditions />} />
