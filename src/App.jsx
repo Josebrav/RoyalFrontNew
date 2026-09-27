@@ -106,6 +106,20 @@ function App() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [location.pathname]);
 
+  // El refresh de arriba solo dispara al cambiar de ruta - si te quedás quieto DENTRO de un
+  // juego o del Vestidor (mismos iframes de Unity que le pegan al backend directo, ver comentario
+  // de arriba), nunca se entera de que las fichas cambiaron. Sondeamos cada pocos segundos nada
+  // más que en esas rutas para que la nav siga el saldo casi en vivo mientras se juega/compra.
+  useEffect(() => {
+    const isGameOrVestidor = location.pathname.includes('/game') || location.pathname === '/vestidor';
+    if (!currentUser?.email || !isGameOrVestidor) return;
+    const interval = setInterval(() => {
+      dispatch(getUserByEmail(currentUser.email)).catch(() => {});
+    }, 3000);
+    return () => clearInterval(interval);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [location.pathname, currentUser?.email]);
+
   const handleCloseGift = () => {
     setShowWelcomeGift(false);
   };
