@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import rgamesLogo from '../../assets/rgames.png';
+import rgamesLogo from '../../assets/LogoOficial.PNG';
 import { t } from '../../i18n/strings';
 
 function Footer() {
