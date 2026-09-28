@@ -28,6 +28,31 @@ const SIMULATED_ONLINE_MIN = 18;
 const SIMULATED_ONLINE_MAX = 34;
 const ACTIVE_GAMES = GAMES_CATALOG.filter((g) => g.status === "active");
 
+// Simulated players (fakeOnlinePlayers.js) have no real user behind them, so there's no avatar to
+// fetch — only real players (real DB id) get the <img>, with the same initials circle as a
+// fallback if that user never set an avatar (404) or the image fails to load for any reason.
+function OnlinePlayerAvatar({ player, isRealPlayer }) {
+  const [imgFailed, setImgFailed] = useState(false);
+  const initials = (player.nick || "RG").slice(0, 2).toUpperCase();
+
+  if (isRealPlayer && !imgFailed) {
+    return (
+      <img
+        src={`${API_URL}/user/${player.id}/avatar-image`}
+        alt={player.nick}
+        className="w-9 h-9 rounded-full object-cover flex-shrink-0 bg-gradient-to-br from-sky-400 to-blue-600"
+        onError={() => setImgFailed(true)}
+      />
+    );
+  }
+
+  return (
+    <div className="w-9 h-9 rounded-full bg-gradient-to-br from-sky-400 to-blue-600 flex items-center justify-center text-white font-bold text-xs flex-shrink-0">
+      {initials}
+    </div>
+  );
+}
+
 export default function Home() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -682,9 +707,7 @@ export default function Home() {
                             onClick={() => isRealPlayer && navigate(`/perfil/${player.nick}`)}
                             className={`flex items-center gap-3 min-w-0 bg-transparent border-0 p-0 text-left ${isRealPlayer ? "cursor-pointer group" : "cursor-default"}`}
                           >
-                            <div className="w-9 h-9 rounded-full bg-gradient-to-br from-sky-400 to-blue-600 flex items-center justify-center text-white font-bold text-xs flex-shrink-0">
-                              {(player.nick || "RG").slice(0, 2).toUpperCase()}
-                            </div>
+                            <OnlinePlayerAvatar player={player} isRealPlayer={isRealPlayer} />
                             <div className="min-w-0">
                               <p className={`font-bold text-white text-sm truncate ${isRealPlayer ? "group-hover:text-sky-400 group-hover:underline" : ""}`}>
                                 {player.nick}
