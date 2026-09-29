@@ -1,14 +1,12 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useSelector } from "react-redux";
 import Swal from "sweetalert2";
 import axios from "axios";
-import * as THREE from 'three';
 
 import banner1 from "../../assets/banner1.png";
 import sportsBanner from "../../assets/b1.jpg";
 import bannercelu from "../../assets/bannercelu.png";
-import chipsImage from "../../assets/chips.png";
 import logo from "../../assets/LogoOficial.PNG";
 
 import Login from "../Login/login";
@@ -42,8 +40,6 @@ export default function Home() {
   // "Entrar como Invitado": shows the same dashboard a logged-in user sees, but with no
   // account behind it — the nav still offers Iniciar Sesión / Registrarse.
   const isGuestPreview = !currentUser?.id && searchParams.get("vista") === "invitado";
-  const threeDChipRef = useRef(null);
-  const chipSpinSpeedRef = useRef(0.015);
 
   const [topWinners, setTopWinners] = useState([]);
   const [onlineUsers, setOnlineUsers] = useState([]);
@@ -59,120 +55,6 @@ export default function Home() {
     if (currentUser?.id) return;
     axios.get(`${API_URL}/leaderboard/recent-wins?limit=12`).then(({ data }) => setRecentWins(data)).catch(() => {});
   }, [currentUser?.id]);
-
-  // Three.js 3D Chip Animation
-  useEffect(() => {
-    if (currentUser?.id || isGuestPreview) return;
-
-    const container = threeDChipRef.current;
-    if (!container) return;
-
-    const width = container.clientWidth || 192;
-    const height = container.clientHeight || 192;
-
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(60, width / height, 0.1, 1000);
-    const renderer = new THREE.WebGLRenderer({ alpha: true, antialias: true });
-    renderer.setPixelRatio(window.devicePixelRatio || 1);
-    renderer.setSize(width, height);
-    renderer.setClearColor(0x000000, 0);
-    container.appendChild(renderer.domElement);
-
-    const ambientLight = new THREE.AmbientLight(0xffffff, 0.8);
-    scene.add(ambientLight);
-    const pointLight = new THREE.PointLight(0xc9a84c, 2, 40);
-    pointLight.position.set(4, 4, 4);
-    scene.add(pointLight);
-
-    const group = new THREE.Group();
-    const chipTexture = new THREE.TextureLoader().load(chipsImage);
-    const geometry = new THREE.CircleGeometry(1, 64);
-    const material = new THREE.MeshStandardMaterial({
-      map: chipTexture,
-      transparent: true,
-      side: THREE.DoubleSide,
-    });
-
-    const chip = new THREE.Mesh(geometry, material);
-    group.add(chip);
-
-    scene.add(group);
-    camera.position.z = 5;
-
-    let animFrameId;
-    let mouseX = 0;
-    let mouseY = 0;
-
-    const handleMouseMove = (event) => {
-      mouseX = (event.clientX / window.innerWidth) - 0.5;
-      mouseY = (event.clientY / window.innerHeight) - 0.5;
-    };
-
-    const handleContainerMouseMove = (event) => {
-      if (!container) return;
-      const rect = container.getBoundingClientRect();
-      const x = event.clientX - rect.left;
-      const y = event.clientY - rect.top;
-      const radius = Math.min(rect.width, rect.height) * 0.45;
-      const dx = x - rect.width / 2;
-      const dy = y - rect.height / 2;
-      const distance = Math.sqrt(dx * dx + dy * dy);
-
-      chipSpinSpeedRef.current = distance <= radius ? 0.4 : 0.1;
-    };
-
-    const handleContainerMouseLeave = () => {
-      chipSpinSpeedRef.current = 0.1;
-    };
-
-    const canvasElement = renderer.domElement;
-    canvasElement.style.pointerEvents = 'auto';
-    canvasElement.addEventListener('mousemove', handleContainerMouseMove);
-    canvasElement.addEventListener('mouseleave', handleContainerMouseLeave);
-
-    window.addEventListener('mousemove', handleMouseMove);
-
-    function animate3D() {
-      animFrameId = requestAnimationFrame(animate3D);
-      group.rotation.y += chipSpinSpeedRef.current + mouseX * 0.02;
-      group.rotation.x += (mouseY * 0.4 - group.rotation.x) * 0.06;
-      group.position.y = Math.sin(Date.now() * 0.0018) * 0.18;
-      renderer.render(scene, camera);
-    }
-    animate3D();
-
-    const handleResize = () => {
-      if (!container) return;
-      const w = container.clientWidth;
-      const h = container.clientHeight;
-      camera.aspect = w / h;
-      camera.updateProjectionMatrix();
-      renderer.setSize(w, h);
-    };
-    window.addEventListener('resize', handleResize);
-
-    return () => {
-      cancelAnimationFrame(animFrameId);
-      window.removeEventListener('resize', handleResize);
-      window.removeEventListener('mousemove', handleMouseMove);
-      if (renderer && renderer.domElement) {
-        renderer.domElement.removeEventListener('mousemove', handleContainerMouseMove);
-        renderer.domElement.removeEventListener('mouseleave', handleContainerMouseLeave);
-      }
-      if (container && renderer.domElement) {
-        container.removeChild(renderer.domElement);
-      }
-      geometry.dispose();
-      material.dispose();
-      chipTexture.dispose();
-      renderer.dispose();
-    };
-    // auth.loading en las deps a propósito: mientras carga, Home todavía muestra el spinner (ver
-    // el "if (auth.loading) return" más abajo) y este div ni existe en el DOM todavía — sin esto,
-    // el efecto corre una sola vez contra un ref vacío y nunca vuelve a correr cuando el DOM real
-    // de invitado por fin aparece, dejando la fichita 3D sin renderizar la primera vez que se
-    // entra a la página.
-  }, [currentUser, auth.loading]);
 
   // Scroll reveal animation observer
   useEffect(() => {
@@ -650,18 +532,24 @@ export default function Home() {
             (no solo arriba/abajo como antes) es lo que lo deja como una textura de fondo sutil en
             vez de un remolino de colores que tapa el logo y hace ilegibles los botones. */}
         <div className="absolute inset-0 bg-gradient-to-b from-background/70 via-background/55 to-background z-[1] pointer-events-none"></div>
+        {/* Brillos de color en las esquinas, mismos tonos ya usados en las categorías de juegos
+            del sitio (slots violeta, mensajes/otros teal) — van encima del overlay oscuro para que
+            se noten sin volver a competir con el logo. */}
+        <div
+          className="absolute top-1/4 left-[20%] -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] rounded-full pointer-events-none z-[2]"
+          style={{ background: "radial-gradient(circle, rgba(168,85,247,0.14) 0%, rgba(0,0,0,0) 70%)" }}
+        ></div>
+        <div
+          className="absolute bottom-1/4 right-[20%] translate-x-1/2 translate-y-1/2 w-[500px] h-[500px] rounded-full pointer-events-none z-[2]"
+          style={{ background: "radial-gradient(circle, rgba(45,212,191,0.12) 0%, rgba(0,0,0,0) 70%)" }}
+        ></div>
         <div className="relative z-10 max-w-6xl w-full px-6 flex flex-col items-center justify-center">
           <div className="text-center reveal" style={{ transitionDelay: "0.2s" }}>
-            <div className="relative inline-block mb-4">
-              <img
-                src={logo}
-                alt="RoyalGames"
-                className="w-56 sm:w-72 md:w-[420px] h-auto object-contain mx-auto drop-shadow-[0_0_40px_rgba(201,168,76,0.4)]"
-              />
-              <span className="absolute top-1/2 -translate-y-1/2 -right-14 md:-right-20 w-20 h-20 md:w-28 md:h-28 pointer-events-none">
-                <div ref={threeDChipRef} id="three-d-chip" className="absolute inset-0 w-full h-full pointer-events-auto" />
-              </span>
-            </div>
+            <img
+              src={logo}
+              alt="RoyalGames"
+              className="w-56 sm:w-72 md:w-[420px] h-auto object-contain mx-auto mb-4 drop-shadow-[0_0_40px_rgba(201,168,76,0.4)]"
+            />
             <EditableText
               contentKey="home.heroTagline"
               className="text-on-surface-variant text-lg md:text-xl font-light tracking-tight mb-6"
