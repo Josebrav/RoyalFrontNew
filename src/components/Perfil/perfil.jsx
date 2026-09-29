@@ -611,13 +611,13 @@ const Perfil = ({ isPublic = false }) => {
                 <h4 className="font-headline-sm text-headline-sm text-white px-6 pt-6 pb-3">Accesos Rápidos</h4>
                 <div className="flex flex-col">
                   {[
-                    { label: "Mis Amigos", icon: "group", to: "/amigos" },
-                    { label: "Mis Mensajes", icon: "forum", to: "/mensajes" },
-                    { label: "Comprar Fichas", icon: "paid", to: "/chips" },
-                    { label: "Cambiar Avatar", icon: "face_retouching_natural", to: "/vestidor" },
-                    { label: "Ayuda", icon: "support_agent", to: "/ayuda" },
+                    { label: "Mis Amigos", icon: "group", to: "/amigos", color: "#a855f7" },
+                    { label: "Mis Mensajes", icon: "forum", to: "/mensajes", color: "#2dd4bf" },
+                    { label: "Comprar Fichas", icon: "paid", to: "/chips", color: "#4caf7d" },
+                    { label: "Cambiar Avatar", icon: "face_retouching_natural", to: "/vestidor", color: "#e05252" },
+                    { label: "Ayuda", icon: "support_agent", to: "/ayuda", color: "#c9a84c" },
                     ...(user.role === "admin" || user.role === "mod"
-                      ? [{ label: "Panel de Administración", icon: "admin_panel_settings", to: "/admin/dashboard" }]
+                      ? [{ label: "Panel de Administración", icon: "admin_panel_settings", to: "/admin/dashboard", color: "#4f8fe0" }]
                       : []),
                   ].map((item) => (
                     <button
@@ -626,7 +626,7 @@ const Perfil = ({ isPublic = false }) => {
                       onClick={() => navigate(item.to)}
                       className="flex items-center gap-3 px-6 py-3 text-left bg-transparent border-0 border-t border-outline-variant/10 first:border-t-0 hover:bg-surface-variant/30 transition-colors cursor-pointer text-on-surface"
                     >
-                      <span className="material-symbols-outlined text-primary text-[20px]">{item.icon}</span>
+                      <span className="material-symbols-outlined text-[20px]" style={{ color: item.color }}>{item.icon}</span>
                       <span className="font-label-lg text-label-lg">{item.label}</span>
                     </button>
                   ))}
