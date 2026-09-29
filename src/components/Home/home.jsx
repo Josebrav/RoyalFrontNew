@@ -506,24 +506,8 @@ export default function Home() {
                 </div>
               </div>
 
-              {/* Side Promo Daily Spin */}
-              <div
-                onClick={handleClaimDailySpin}
-                className="bg-surface-container rounded-xl p-6 border border-outline-variant/20 flex items-center gap-4 relative overflow-hidden group cursor-pointer text-left"
-              >
-                <div className="relative z-10 flex-1">
-                  <h4 className="font-bold text-headline-sm text-white">{t("home.dashboard.giroDiario")}</h4>
-                  <p className="text-on-surface-variant text-body-sm font-body-sm">
-                    {dailySpinStatus && !dailySpinStatus.canSpin
-                      ? "Ya reclamaste tu giro de hoy. ¡Volvé mañana!"
-                      : t("home.dashboard.giroDiarioText")}
-                  </p>
-                </div>
-                <span className="material-symbols-outlined text-primary text-5xl relative z-10 group-hover:scale-110 transition-transform">redeem</span>
-                <div className="absolute -right-4 -bottom-4 opacity-5">
-                  <span className="material-symbols-outlined text-9xl">redeem</span>
-                </div>
-              </div>
+              {/* Tarjeta de Giro Diario VIP oculta a pedido (ver handleClaimDailySpin,
+                  DailySpinModal y GET /daily-spin/status, todo intacto por si se retoma) */}
             </aside>
           </div>
         </main>
