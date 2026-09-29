@@ -102,50 +102,70 @@ export default function Login({ className, children }) {
 
     const googleBtnRef = useRef(null);
 
-    // 1) Inicializa GSI una sola vez al cargar la página
-    useEffect(() => {
-        const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
-        if (gsiInitialized || !clientId || !window.google?.accounts?.id) return;
+    // Callback de GSI en un ref: initialize() corre una sola vez, pero así siempre
+    // usa la versión más reciente de auth/navigate.
+    const googleCallbackRef = useRef(null);
+    googleCallbackRef.current = async (response) => {
+        try {
+            Swal.fire({ title: t("login.googleLoadingTitle"), allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+            const result = await auth.loginWithGoogle(response.credential);
+            setIsLoginOpen(false);
+            navigate('/');
+            if (result?.firstChipsReceived) {
+                Swal.fire(t("login.firstChipsTitle"), t("login.firstChipsText"), "success");
+            } else {
+                Swal.fire({ position: "center", icon: "success", title: t("login.successTitle"), showConfirmButton: false, timer: 2500 });
+            }
+        } catch (error) {
+            Swal.fire({ icon: "error", title: t("login.googleErrorTitle"), text: error?.message || t("login.googleErrorText"), confirmButtonColor: "#C9A84C" });
+        }
+    };
 
-        gsiInitialized = true;
-        window.google.accounts.id.initialize({
-            client_id: clientId,
-            use_fedcm_for_prompt: false,
-            callback: async (response) => {
-                try {
-                    Swal.fire({ title: t("login.googleLoadingTitle"), allowOutsideClick: false, didOpen: () => Swal.showLoading() });
-                    const result = await auth.loginWithGoogle(response.credential);
-                    setIsLoginOpen(false);
-                    navigate('/');
-                    if (result?.firstChipsReceived) {
-                        Swal.fire(t("login.firstChipsTitle"), t("login.firstChipsText"), "success");
-                    } else {
-                        Swal.fire({ position: "center", icon: "success", title: t("login.successTitle"), showConfirmButton: false, timer: 2500 });
-                    }
-                } catch (error) {
-                    Swal.fire({ icon: "error", title: t("login.googleErrorTitle"), text: error?.message || t("login.googleErrorText"), confirmButtonColor: "#C9A84C" });
-                }
-            },
-        });
-    }, []);
-
-    // 2) Renderiza el botón oficial de Google cuando el modal abre
-    //    (el div ref solo existe en el DOM cuando isLoginOpen = true)
+    // Inicializa GSI (una vez) y renderiza el botón oficial cuando el modal abre.
+    // El script de Google carga async, así que puede no estar listo todavía: se reintenta
+    // hasta ~5s. El div ref solo existe en el DOM cuando isLoginOpen = true.
     useEffect(() => {
         if (!isLoginOpen) return;
-        
-        const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 
-        if (!googleBtnRef.current || !window.google?.accounts?.id) {
+        const clientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
+        if (!clientId) {
+            console.error("[GSI] Falta VITE_GOOGLE_CLIENT_ID en el build");
             return;
         }
 
-        window.google.accounts.id.renderButton(googleBtnRef.current, {
-            theme: "outline",
-            size: "large",
-            width: googleBtnRef.current.offsetWidth || 400,
-            text: "continue_with",
-        });
+        let cancelled = false;
+        let timer;
+        const tryRender = (attempt = 0) => {
+            if (cancelled) return;
+            const gsi = window.google?.accounts?.id;
+            if (!gsi || !googleBtnRef.current) {
+                if (attempt < 50) timer = setTimeout(() => tryRender(attempt + 1), 100);
+                else console.error("[GSI] El script de Google Identity Services no cargó");
+                return;
+            }
+
+            if (!gsiInitialized) {
+                gsiInitialized = true;
+                gsi.initialize({
+                    client_id: clientId,
+                    use_fedcm_for_prompt: false,
+                    callback: (response) => googleCallbackRef.current(response),
+                });
+            }
+
+            gsi.renderButton(googleBtnRef.current, {
+                theme: "outline",
+                size: "large",
+                width: googleBtnRef.current.offsetWidth || 400,
+                text: "continue_with",
+            });
+        };
+        tryRender();
+
+        return () => {
+            cancelled = true;
+            clearTimeout(timer);
+        };
     }, [isLoginOpen]);
 
 
