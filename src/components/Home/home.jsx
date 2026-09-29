@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import Swal from "sweetalert2";
 import axios from "axios";
 
@@ -14,11 +14,13 @@ import RegistroForm from "../Register/register";
 import { ShaderAnimation } from "../ui/shader-animation";
 import { formatChips, swalThemeConfig } from "../../utils/formatters";
 import GamesCatalog from "../GamesCatalog/gamesCatalog";
+import DailySpinModal from "../DailySpin/DailySpinModal";
 import EditableText from "../ui/EditableText";
 import EditableImage from "../ui/EditableImage";
 import BannerCarousel from "../ui/BannerCarousel";
 import { GAMES_CATALOG, CATEGORY_META, getGameByPlayPath, getGameBySlug } from "../../data/gamesCatalog";
 import { generateFakeOnlinePlayers } from "../../data/fakeOnlinePlayers";
+import { fetchUserProfile } from "../../redux/actions";
 import API_URL from "../../api/rutaApi";
 import { useAuth } from "../../context/oauthContext";
 import { t } from "../../i18n/strings";
@@ -29,6 +31,7 @@ const ACTIVE_GAMES = GAMES_CATALOG.filter((g) => g.status === "active");
 
 export default function Home() {
   const navigate = useNavigate();
+  const dispatch = useDispatch();
   const [searchParams] = useSearchParams();
   const { currentUser } = useSelector((state) => state);
   // Al recargar la página, restaurar la sesión (canjear la cookie httpOnly por un access token
@@ -49,6 +52,17 @@ export default function Home() {
   const [simulatedOnlineTarget, setSimulatedOnlineTarget] = useState(
     () => SIMULATED_ONLINE_MIN + Math.floor(Math.random() * (SIMULATED_ONLINE_MAX - SIMULATED_ONLINE_MIN + 1))
   );
+
+  // La ruleta ya NO aparece sola al loguearse (Unity tiene su propia pantalla de carga, se
+  // sentia intrusivo) - se abre solo cuando el jugador clickea la tarjeta "Giro Diario VIP",
+  // y dailySpinStatus (traido de GET /daily-spin/status) decide si esa tarjeta ofrece girar
+  // o avisa que ya giro hoy.
+  const [showDailySpin, setShowDailySpin] = useState(false);
+  const [dailySpinStatus, setDailySpinStatus] = useState(null);
+  useEffect(() => {
+    if (!currentUser?.id) return;
+    axios.get(`${API_URL}/daily-spin/status`).then(({ data }) => setDailySpinStatus(data)).catch(() => {});
+  }, [currentUser?.id]);
 
   // Real recent wins (chips actually won in games) for the guest landing page ticker.
   useEffect(() => {
@@ -167,9 +181,29 @@ export default function Home() {
   };
 
   const handleClaimDailySpin = () => {
+    if (dailySpinStatus && !dailySpinStatus.canSpin) {
+      Swal.fire({
+        title: "Giro Diario VIP",
+        text: "Ya reclamaste tu giro de hoy. ¡Volvé mañana por más fichas!",
+        icon: "info",
+        ...swalThemeConfig,
+      });
+      return;
+    }
+    setShowDailySpin(true);
+  };
+
+  const handleDailySpinResult = ({ amount, error }) => {
+    setShowDailySpin(false);
+    if (error) {
+      Swal.fire({ title: "Giro Diario VIP", text: error, icon: "error", ...swalThemeConfig });
+      return;
+    }
+    setDailySpinStatus({ canSpin: false, lastSpinAt: new Date().toISOString(), nextAvailableAt: null });
+    dispatch(fetchUserProfile());
     Swal.fire({
       title: "Giro Diario VIP",
-      text: "¡Has girado la ruleta VIP y ganaste 500 fichas extra! Se han sumado a tu balance.",
+      text: `¡Ganaste ${new Intl.NumberFormat("es-ES").format(amount)} fichas! Se sumaron a tu balance.`,
       icon: "success",
       ...swalThemeConfig,
     });
@@ -223,6 +257,10 @@ export default function Home() {
 
     return (
       <div className="bg-background text-on-background font-body-md overflow-x-hidden min-h-screen select-none pb-24 md:pb-12">
+        {showDailySpin && (
+          <DailySpinModal onClose={() => setShowDailySpin(false)} onResult={handleDailySpinResult} />
+        )}
+
         {/* Sticky Balance Bar (Below Navbar) */}
         {/* <div className="sticky top-16 z-40 bg-surface-container-low border-b border-outline-variant/10 px-4 md:px-margin-desktop py-2 flex items-center justify-between">
           <div className="flex gap-4 md:gap-8 overflow-x-auto no-scrollbar py-1">
@@ -475,7 +513,11 @@ export default function Home() {
               >
                 <div className="relative z-10 flex-1">
                   <h4 className="font-bold text-headline-sm text-white">{t("home.dashboard.giroDiario")}</h4>
-                  <p className="text-on-surface-variant text-body-sm font-body-sm">{t("home.dashboard.giroDiarioText")}</p>
+                  <p className="text-on-surface-variant text-body-sm font-body-sm">
+                    {dailySpinStatus && !dailySpinStatus.canSpin
+                      ? "Ya reclamaste tu giro de hoy. ¡Volvé mañana!"
+                      : t("home.dashboard.giroDiarioText")}
+                  </p>
                 </div>
                 <span className="material-symbols-outlined text-primary text-5xl relative z-10 group-hover:scale-110 transition-transform">redeem</span>
                 <div className="absolute -right-4 -bottom-4 opacity-5">
