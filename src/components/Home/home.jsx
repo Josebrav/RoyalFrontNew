@@ -9,6 +9,7 @@ import banner1 from "../../assets/banner1.png";
 import sportsBanner from "../../assets/b1.jpg";
 import bannercelu from "../../assets/bannercelu.png";
 import chipsImage from "../../assets/chips.png";
+import logo from "../../assets/LogoOficial.PNG";
 
 import Login from "../Login/login";
 import RegistroForm from "../Register/register";
@@ -768,15 +769,30 @@ export default function Home() {
       {/* Hero Section */}
       <section className="relative min-h-screen flex items-center justify-center pt-20 overflow-hidden hero-section">
         <ShaderAnimation />
+        {/* Brillos de color ambiente, mismos tonos ya usados en las categorías de juegos del
+            sitio (slots violeta, mensajes/otros teal) — le suman color al fondo sin competir con
+            el dorado del logo. */}
+        <div
+          className="absolute top-1/4 left-[20%] -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] rounded-full pointer-events-none z-[1]"
+          style={{ background: "radial-gradient(circle, rgba(168,85,247,0.14) 0%, rgba(0,0,0,0) 70%)" }}
+        ></div>
+        <div
+          className="absolute bottom-1/4 right-[20%] translate-x-1/2 translate-y-1/2 w-[500px] h-[500px] rounded-full pointer-events-none z-[1]"
+          style={{ background: "radial-gradient(circle, rgba(45,212,191,0.12) 0%, rgba(0,0,0,0) 70%)" }}
+        ></div>
         <div className="absolute inset-0 bg-gradient-to-b from-background/40 via-transparent to-background z-[1] pointer-events-none"></div>
         <div className="relative z-10 max-w-6xl w-full px-6 flex flex-col items-center justify-center">
           <div className="text-center reveal" style={{ transitionDelay: "0.2s" }}>
-            <h1 className="relative inline-block text-6xl md:text-8xl font-extrabold tracking-tighter mb-4 leading-[1.3] text-white overflow-visible">
-              <span className="gold-shimmer italic inline-block pb-4 md:pb-6 overflow-visible" translate="no">RoyalGames</span>
-              <span className="absolute top-1/2 -translate-y-1/2 -right-32 md:-right-44 w-32 h-32 md:w-40 md:h-40 pointer-events-none">
+            <div className="relative inline-block mb-4">
+              <img
+                src={logo}
+                alt="RoyalGames"
+                className="w-56 sm:w-72 md:w-[420px] h-auto object-contain mx-auto drop-shadow-[0_0_40px_rgba(201,168,76,0.4)]"
+              />
+              <span className="absolute top-1/2 -translate-y-1/2 -right-14 md:-right-20 w-20 h-20 md:w-28 md:h-28 pointer-events-none">
                 <div ref={threeDChipRef} id="three-d-chip" className="absolute inset-0 w-full h-full pointer-events-auto" />
               </span>
-            </h1>
+            </div>
             <EditableText
               contentKey="home.heroTagline"
               className="text-on-surface-variant text-lg md:text-xl font-light tracking-tight mb-6"
