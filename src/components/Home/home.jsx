@@ -42,8 +42,6 @@ export default function Home() {
   // "Entrar como Invitado": shows the same dashboard a logged-in user sees, but with no
   // account behind it — the nav still offers Iniciar Sesión / Registrarse.
   const isGuestPreview = !currentUser?.id && searchParams.get("vista") === "invitado";
-  const particlesContainerRef = useRef(null);
-  const shaderCanvasRef = useRef(null);
   const threeDChipRef = useRef(null);
   const chipSpinSpeedRef = useRef(0.015);
 
@@ -61,141 +59,6 @@ export default function Home() {
     if (currentUser?.id) return;
     axios.get(`${API_URL}/leaderboard/recent-wins?limit=12`).then(({ data }) => setRecentWins(data)).catch(() => {});
   }, [currentUser?.id]);
-
-  // WebGL shader background effect
-  useEffect(() => {
-    if (currentUser?.id || isGuestPreview) return;
-
-    const canvas = shaderCanvasRef.current;
-    if (!canvas) return;
-
-    const gl = canvas.getContext("webgl");
-    if (!gl) {
-      return;
-    }
-
-    const vertexShaderSource = `
-        attribute vec2 position;
-        varying vec2 v_texCoord;
-        void main() {
-            v_texCoord = position * 0.5 + 0.5;
-            v_texCoord.y = 1.0 - v_texCoord.y;
-            gl_Position = vec4(position, 0.0, 1.0);
-        }
-    `;
-
-    const fragmentShaderSource = `
-        precision highp float;
-        uniform float u_time;
-        uniform vec2 u_resolution;
-        uniform vec2 u_mouse;
-        varying vec2 v_texCoord;
-
-        void main() {
-            vec2 uv = v_texCoord;
-            vec2 mouse = u_mouse / u_resolution;
-            
-            float t = u_time * 0.2;
-            float noise = sin(uv.x * 10.0 + t) * cos(uv.y * 10.0 - t);
-            noise += sin(uv.x * 20.0 - t * 1.5) * cos(uv.y * 15.0 + t * 0.8) * 0.5;
-            
-            float dist = distance(uv, mouse);
-            float pulse = smoothstep(0.4, 0.0, dist) * 0.2;
-            
-            vec3 color1 = vec3(0.04, 0.03, 0.02); // Deeper black-gold for noir feel
-            vec3 color2 = vec3(0.79, 0.66, 0.30); // Royal Gold (#c9a84c)
-            vec3 color3 = vec3(1.0, 0.95, 0.8);   // Highlight gold
-            
-            float mixFactor = smoothstep(-1.0, 1.0, noise + pulse);
-            vec3 finalColor = mix(color1, color2, mixFactor * 0.4); // Subtle mix
-            
-            float highlight = pow(max(0.0, noise + pulse), 8.0);
-            finalColor += color3 * highlight * 0.3;
-            
-            float vignette = 1.0 - smoothstep(0.3, 1.2, length(uv - 0.5));
-            finalColor *= vignette;
-
-            gl_FragColor = vec4(finalColor, 1.0);
-        }
-    `;
-
-    function createShader(gl, type, source) {
-      const shader = gl.createShader(type);
-      gl.shaderSource(shader, source);
-      gl.compileShader(shader);
-      if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
-        gl.deleteShader(shader);
-        return null;
-      }
-      return shader;
-    }
-
-    const vertexShader = createShader(gl, gl.VERTEX_SHADER, vertexShaderSource);
-    const fragmentShader = createShader(gl, gl.FRAGMENT_SHADER, fragmentShaderSource);
-
-    if (!vertexShader || !fragmentShader) return;
-
-    const program = gl.createProgram();
-    gl.attachShader(program, vertexShader);
-    gl.attachShader(program, fragmentShader);
-    gl.linkProgram(program);
-
-    if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
-      return;
-    }
-
-    gl.useProgram(program);
-
-    const positionBuffer = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]), gl.STATIC_DRAW);
-
-    const positionLocation = gl.getAttribLocation(program, "position");
-    gl.enableVertexAttribArray(positionLocation);
-    gl.vertexAttribPointer(positionLocation, 2, gl.FLOAT, false, 0, 0);
-
-    const timeLoc = gl.getUniformLocation(program, "u_time");
-    const resLoc = gl.getUniformLocation(program, "u_resolution");
-    const mouseLoc = gl.getUniformLocation(program, "u_mouse");
-
-    let mouseX = 0;
-    let mouseY = 0;
-    const handleMouseMove = (e) => {
-      const rect = canvas.getBoundingClientRect();
-      mouseX = e.clientX - rect.left;
-      mouseY = e.clientY - rect.top;
-    };
-
-    window.addEventListener("mousemove", handleMouseMove);
-
-    let animationFrameId;
-    function render(time) {
-      if (!canvas || !gl) return;
-      canvas.width = canvas.clientWidth;
-      canvas.height = canvas.clientHeight;
-      gl.viewport(0, 0, canvas.width, canvas.height);
-
-      gl.uniform1f(timeLoc, time * 0.001);
-      gl.uniform2f(resLoc, canvas.width, canvas.height);
-      gl.uniform2f(mouseLoc, mouseX, canvas.height - mouseY);
-
-      gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
-      animationFrameId = requestAnimationFrame(render);
-    }
-
-    animationFrameId = requestAnimationFrame(render);
-
-    return () => {
-      cancelAnimationFrame(animationFrameId);
-      window.removeEventListener("mousemove", handleMouseMove);
-      if (gl) {
-        gl.deleteBuffer(positionBuffer);
-        gl.deleteProgram(program);
-        gl.deleteShader(vertexShader);
-        gl.deleteShader(fragmentShader);
-      }
-    };
-  }, [currentUser]);
 
   // Three.js 3D Chip Animation
   useEffect(() => {
@@ -304,7 +167,12 @@ export default function Home() {
       chipTexture.dispose();
       renderer.dispose();
     };
-  }, [currentUser]);
+    // auth.loading en las deps a propósito: mientras carga, Home todavía muestra el spinner (ver
+    // el "if (auth.loading) return" más abajo) y este div ni existe en el DOM todavía — sin esto,
+    // el efecto corre una sola vez contra un ref vacío y nunca vuelve a correr cuando el DOM real
+    // de invitado por fin aparece, dejando la fichita 3D sin renderizar la primera vez que se
+    // entra a la página.
+  }, [currentUser, auth.loading]);
 
   // Scroll reveal animation observer
   useEffect(() => {
@@ -341,7 +209,15 @@ export default function Home() {
       elements.forEach((el) => revealObserver.unobserve(el));
       clearTimeout(fallbackTimer);
     };
-  }, [currentUser]);
+    // auth.loading en las deps: este efecto corre en CADA render de Home (los hooks son
+    // incondicionales), incluido el primero, mientras auth.loading todavía es true y Home solo
+    // muestra el spinner - en ese momento document.querySelectorAll(".reveal") no encuentra nada
+    // porque el JSX de invitado (con los .reveal reales) ni se montó. Sin auth.loading acá, el
+    // observer y el fallback de 700ms se arman contra ese DOM vacío y nunca se vuelven a armar
+    // cuando el JSX de invitado por fin aparece - los .reveal reales se quedan en opacity:0 para
+    // siempre (logo, texto y botones invisibles, aunque el fondo sí se vea porque no tiene esta
+    // clase). Justo el bug reportado: "no aparecen los logos ni los botones la primera vez".
+  }, [currentUser, auth.loading]);
 
   // Parallax effect for cards
   useEffect(() => {
@@ -362,7 +238,7 @@ export default function Home() {
     return () => {
       document.removeEventListener("mousemove", handleMouseMove);
     };
-  }, [currentUser]);
+  }, [currentUser, auth.loading]);
 
   // Real top-winners leaderboard (chips actually won in games) + online players list
   useEffect(() => {
@@ -769,18 +645,11 @@ export default function Home() {
       {/* Hero Section */}
       <section className="relative min-h-screen flex items-center justify-center pt-20 overflow-hidden hero-section">
         <ShaderAnimation />
-        {/* Brillos de color ambiente, mismos tonos ya usados en las categorías de juegos del
-            sitio (slots violeta, mensajes/otros teal) — le suman color al fondo sin competir con
-            el dorado del logo. */}
-        <div
-          className="absolute top-1/4 left-[20%] -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] rounded-full pointer-events-none z-[1]"
-          style={{ background: "radial-gradient(circle, rgba(168,85,247,0.14) 0%, rgba(0,0,0,0) 70%)" }}
-        ></div>
-        <div
-          className="absolute bottom-1/4 right-[20%] translate-x-1/2 translate-y-1/2 w-[500px] h-[500px] rounded-full pointer-events-none z-[1]"
-          style={{ background: "radial-gradient(circle, rgba(45,212,191,0.12) 0%, rgba(0,0,0,0) 70%)" }}
-        ></div>
-        <div className="absolute inset-0 bg-gradient-to-b from-background/40 via-transparent to-background z-[1] pointer-events-none"></div>
+        {/* El shader de fondo (ver shader-animation.jsx) sale mucho más intenso/saturado en vivo
+            de lo que sugiere su fórmula leída en frío — un overlay oscuro fuerte en TODA el área
+            (no solo arriba/abajo como antes) es lo que lo deja como una textura de fondo sutil en
+            vez de un remolino de colores que tapa el logo y hace ilegibles los botones. */}
+        <div className="absolute inset-0 bg-gradient-to-b from-background/70 via-background/55 to-background z-[1] pointer-events-none"></div>
         <div className="relative z-10 max-w-6xl w-full px-6 flex flex-col items-center justify-center">
           <div className="text-center reveal" style={{ transitionDelay: "0.2s" }}>
             <div className="relative inline-block mb-4">
