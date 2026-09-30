@@ -21,7 +21,7 @@ import EditableImage from "../ui/EditableImage";
 import BannerCarousel from "../ui/BannerCarousel";
 import { GAMES_CATALOG, CATEGORY_META, getGameByPlayPath, getGameBySlug } from "../../data/gamesCatalog";
 import { generateFakeOnlinePlayers } from "../../data/fakeOnlinePlayers";
-import { fetchUserProfile } from "../../redux/actions";
+import { fetchUserProfile, getUserByEmail } from "../../redux/actions";
 import API_URL from "../../api/rutaApi";
 import { useAuth } from "../../context/oauthContext";
 import { t } from "../../i18n/strings";
@@ -80,7 +80,9 @@ export default function Home() {
       return;
     }
     setDailyBonusStatus((prev) => (prev ? { ...prev, canClaim: false } : prev));
-    dispatch(fetchUserProfile());
+    if (currentUser?.email) {
+      dispatch(getUserByEmail(currentUser.email));
+    }
     Swal.fire({
       title: "Bono Diario",
       text: `¡Ganaste ${new Intl.NumberFormat("es-ES").format(amount)} fichas!`,

@@ -83,7 +83,7 @@ export default function DailyBonusModal({ day, onClose, onClaimed }) {
 
   return (
     <div className="fixed inset-0 z-[200] bg-black/85 backdrop-blur-sm flex items-center justify-center p-4">
-      <div className="relative w-full max-w-xl flex flex-col items-center">
+      <div className="relative w-full max-w-[662px] flex flex-col items-center">
         <button
           type="button"
           onClick={onClose}
@@ -100,7 +100,7 @@ export default function DailyBonusModal({ day, onClose, onClaimed }) {
           type="button"
           onClick={handleClaim}
           disabled={claiming}
-          className="mt-2 w-2/3 max-w-[280px] cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed transition-transform hover:scale-105 active:scale-95"
+          className="mt-0 w-2/3 max-w-[322px] cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed transition-transform hover:scale-105 active:scale-95"
         >
           <img src={botonReclamar} alt="Reclamar Bono" className="w-full select-none" draggable={false} />
         </button>
