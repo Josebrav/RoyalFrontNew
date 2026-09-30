@@ -15,6 +15,7 @@ import { ShaderAnimation } from "../ui/shader-animation";
 import { formatChips, swalThemeConfig } from "../../utils/formatters";
 import GamesCatalog from "../GamesCatalog/gamesCatalog";
 import DailySpinModal from "../DailySpin/DailySpinModal";
+import DailyBonusModal from "../DailyBonus/DailyBonusModal";
 import EditableText from "../ui/EditableText";
 import EditableImage from "../ui/EditableImage";
 import BannerCarousel from "../ui/BannerCarousel";
@@ -63,6 +64,30 @@ export default function Home() {
     if (!currentUser?.id) return;
     axios.get(`${API_URL}/daily-spin/status`).then(({ data }) => setDailySpinStatus(data)).catch(() => {});
   }, [currentUser?.id]);
+
+  // Bono Diario de 7 días (independiente del Giro Diario de arriba, no se excluyen entre sí):
+  // si al entrar/loguearse todavía no reclamó el de hoy, el modal se abre solo.
+  const [dailyBonusStatus, setDailyBonusStatus] = useState(null);
+  useEffect(() => {
+    if (!currentUser?.id) return;
+    axios.get(`${API_URL}/daily-bonus/status`).then(({ data }) => setDailyBonusStatus(data)).catch(() => {});
+  }, [currentUser?.id]);
+
+  const handleDailyBonusClaimed = ({ amount, error }) => {
+    if (error) {
+      setDailyBonusStatus((prev) => (prev ? { ...prev, canClaim: false } : prev));
+      Swal.fire({ title: "Bono Diario", text: error, icon: "error", ...swalThemeConfig });
+      return;
+    }
+    setDailyBonusStatus((prev) => (prev ? { ...prev, canClaim: false } : prev));
+    dispatch(fetchUserProfile());
+    Swal.fire({
+      title: "Bono Diario",
+      text: `¡Ganaste ${new Intl.NumberFormat("es-ES").format(amount)} fichas!`,
+      icon: "success",
+      ...swalThemeConfig,
+    });
+  };
 
   // Real recent wins (chips actually won in games) for the guest landing page ticker.
   useEffect(() => {
@@ -259,6 +284,14 @@ export default function Home() {
       <div className="bg-background text-on-background font-body-md overflow-x-hidden min-h-screen select-none pb-24 md:pb-12">
         {showDailySpin && (
           <DailySpinModal onClose={() => setShowDailySpin(false)} onResult={handleDailySpinResult} />
+        )}
+
+        {!showDailySpin && dailyBonusStatus?.canClaim && (
+          <DailyBonusModal
+            day={dailyBonusStatus.day}
+            onClose={() => setDailyBonusStatus((prev) => (prev ? { ...prev, canClaim: false } : prev))}
+            onClaimed={handleDailyBonusClaimed}
+          />
         )}
 
         {/* Sticky Balance Bar (Below Navbar) */}

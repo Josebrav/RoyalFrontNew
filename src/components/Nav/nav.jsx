@@ -198,7 +198,7 @@ export default function Navbar() {
                   </span>
                   <RankBadge tier={currentUser.rank} size="md" />
                 </span>
-                <span className="flex items-center gap-1.5 text-primary text-sm font-bold tracking-wide mt-1">
+                <span id="nav-chips-target" className="flex items-center gap-1.5 text-primary text-sm font-bold tracking-wide mt-1">
                   <img src={chips} alt="Fichas" className="w-4 h-4" />
                   {formattedChips}
                 </span>
