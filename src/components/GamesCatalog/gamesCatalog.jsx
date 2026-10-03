@@ -70,7 +70,7 @@ export default function GamesCatalog({ compact = false }) {
         )}
       </div>
 
-      <div className={`columns-1 sm:columns-2 ${compact ? "lg:columns-3" : "lg:columns-3 xl:columns-5"} gap-x-6`}>
+      <div className={`columns-1 sm:columns-2 ${compact ? "lg:columns-3" : "xl:columns-3"} gap-x-6`}>
         {CATEGORY_ORDER.map((categoryKey) => {
           const meta = CATEGORY_META[categoryKey];
           const games = getGamesByCategory(categoryKey);
