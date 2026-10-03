@@ -166,6 +166,33 @@ export const GAMES_CATALOG = [
       "El juego de cartas favorito de todos, ahora contra otros jugadores de RoyalGames. Quédate sin cartas antes que nadie y grita ¡UNO!",
   },
   {
+    slug: "royal-poker",
+    name: "RoyalPoker",
+    category: "cartas",
+    status: "soon",
+    icon: "casino",
+    description:
+      "El Texas Hold'em de siempre, con la mesa de RoyalGames: leé a tus rivales, armá tu jugada y llevate el pozo.",
+  },
+  {
+    slug: "truco-argentino",
+    name: "Truco Argentino",
+    category: "cartas",
+    status: "soon",
+    icon: "style",
+    description:
+      "El clásico de los bares argentinos llega a RoyalGames: envido, truco y mucho bluff con la baraja española de toda la vida.",
+  },
+  {
+    slug: "buraco",
+    name: "Buraco",
+    category: "cartas",
+    status: "soon",
+    icon: "extension",
+    description:
+      "Armá tríos y escaleras antes que tus rivales en este clásico de mesa sudamericano, ahora online contra otros jugadores de RoyalGames.",
+  },
+  {
     slug: "gilded-cobra",
     name: "Gilded Cobra",
     category: "slots",
