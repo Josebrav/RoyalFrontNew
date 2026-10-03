@@ -166,22 +166,49 @@ export const GAMES_CATALOG = [
       "El juego de cartas favorito de todos, ahora contra otros jugadores de RoyalGames. Quédate sin cartas antes que nadie y grita ¡UNO!",
   },
   {
-    slug: "royal-christmas",
-    name: "RoyalChristmas",
+    slug: "gilded-cobra",
+    name: "Gilded Cobra",
     category: "slots",
     status: "soon",
-    icon: "ac_unit",
+    icon: "whatshot",
     description:
-      "Tragamonedas de temporada con clima navideño, símbolos especiales y multiplicadores helados para las fiestas más doradas del año.",
+      "Tragamonedas con temática egipcia: cobras doradas, símbolos ancestrales y multiplicadores que se enroscan a tu favor.",
   },
   {
-    slug: "videoslots",
-    name: "VideoSlots",
+    slug: "pearl-empires",
+    name: "Pearl Empires",
+    category: "slots",
+    status: "soon",
+    icon: "castle",
+    description:
+      "Construí tu imperio de perlas y tesoros en esta tragamonedas de reinos antiguos, con rondas de bonificación dignas de la realeza.",
+  },
+  {
+    slug: "royal-gods",
+    name: "RoyalGods",
+    category: "slots",
+    status: "soon",
+    icon: "auto_awesome",
+    description:
+      "Mitología y fortuna se combinan: invocá a los dioses de RoyalGames para desatar multiplicadores divinos en cada giro.",
+  },
+  {
+    slug: "royal-futbol",
+    name: "RoyalFutbol",
+    category: "slots",
+    status: "soon",
+    icon: "sports_soccer",
+    description:
+      "La pasión del fútbol convertida en tragamonedas: símbolos de gol, penales de bonificación y la emoción del clásico en cada tirada.",
+  },
+  {
+    slug: "gemas-of-gold",
+    name: "GemasOfGold",
     category: "slots",
     status: "soon",
     icon: "diamond",
     description:
-      "Todo nuestro catálogo de tragamonedas en un solo lugar: explora, filtra y encuentra tu próxima slot favorita.",
+      "Gemas brillantes y cascadas de oro: una tragamonedas clásica con multiplicadores en cadena para los amantes de lo simple y lo dorado.",
   },
 ];
 
