@@ -64,6 +64,7 @@ const STRINGS = {
     "catalog.category.cartas": "Cartas",
     "catalog.category.otros": "Otros",
     "catalog.category.slots": "Slots",
+    "catalog.category.mesa": "Juegos de Mesa",
 
     "legal.updatedAt": "Última actualización",
     "legal.back": "Volver",
@@ -209,6 +210,7 @@ const STRINGS = {
     "catalog.category.cartas": "Card Games",
     "catalog.category.otros": "Others",
     "catalog.category.slots": "Slots",
+    "catalog.category.mesa": "Board Games",
 
     "legal.updatedAt": "Last updated",
     "legal.back": "Back",
@@ -354,6 +356,7 @@ const STRINGS = {
     "catalog.category.cartas": "Cartas",
     "catalog.category.otros": "Outros",
     "catalog.category.slots": "Caça-níqueis",
+    "catalog.category.mesa": "Jogos de Mesa",
 
     "legal.updatedAt": "Última atualização",
     "legal.back": "Voltar",
