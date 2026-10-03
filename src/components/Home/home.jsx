@@ -487,15 +487,17 @@ export default function Home() {
                 </div>
               </div>
 
-              {/* Online Players */}
-              <div className="bg-surface-container-high rounded-xl border border-sky-400/20 overflow-hidden flex flex-col">
+              {/* Online Players — flex-1 así ocupa el resto del alto del aside en vez de cortarse
+                  a una altura fija, dejando hueco vacío al lado de la columna principal (más alta
+                  por el catálogo compacto que cuelga de ella). */}
+              <div className="flex-1 min-h-[20rem] bg-surface-container-high rounded-xl border border-sky-400/20 overflow-hidden flex flex-col">
                 <div className="p-4 border-b border-outline-variant/10 flex items-center gap-2">
                   <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse flex-shrink-0"></span>
                   <h3 className="font-bold text-headline-sm font-headline-sm text-white">
                     {otherOnlineUsers.length} {otherOnlineUsers.length === 1 ? t("home.dashboard.jugadorConectado") : t("home.dashboard.jugadoresConectados")}
                   </h3>
                 </div>
-                <div className="max-h-80 overflow-y-auto divide-y divide-outline-variant/10">
+                <div className="flex-1 min-h-0 overflow-y-auto divide-y divide-outline-variant/10">
                   {otherOnlineUsers.length === 0 ? (
                     <p className="text-on-surface-variant text-sm text-center py-6 px-4">
                       {t("home.dashboard.noOtherPlayers")}
