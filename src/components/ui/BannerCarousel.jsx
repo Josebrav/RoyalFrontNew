@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import Swal from "sweetalert2";
 import { fetchBannerSlides, createBannerSlide, deleteBannerSlide } from "../../redux/actions";
@@ -12,6 +13,7 @@ const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp"];
 // image (fallbackSrc) when no admin has added any real slides yet, so the banner is never blank.
 export default function BannerCarousel({ fallbackSrc, className }) {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const currentUser = useSelector((state) => state.currentUser);
   const canManage = currentUser?.role === "admin" || currentUser?.role === "mod";
 
@@ -52,11 +54,32 @@ export default function BannerCarousel({ fallbackSrc, className }) {
       Swal.fire({ title: "Archivo muy pesado", text: "El límite es 5MB.", icon: "error", ...swalThemeConfig });
       return;
     }
+    const { value: linkTo, isConfirmed } = await Swal.fire({
+      title: "¿A dónde lleva este banner?",
+      input: "text",
+      inputPlaceholder: "/ayuda, /juegos, https://... (opcional)",
+      text: "Dejalo vacío si no querés que sea clickeable.",
+      showCancelButton: true,
+      confirmButtonText: "Subir imagen",
+      cancelButtonText: "Cancelar",
+      ...swalThemeConfig,
+    });
+    if (!isConfirmed) return;
+
     try {
-      await dispatch(createBannerSlide(file));
+      await dispatch(createBannerSlide(file, linkTo?.trim() || null));
       loadSlides();
     } catch (error) {
       Swal.fire({ title: "Error", text: "No se pudo subir la imagen.", icon: "error", ...swalThemeConfig });
+    }
+  };
+
+  const handleSlideClick = (slide) => {
+    if (!slide?.linkTo) return;
+    if (/^https?:\/\//i.test(slide.linkTo)) {
+      window.open(slide.linkTo, "_blank", "noopener,noreferrer");
+    } else {
+      navigate(slide.linkTo);
     }
   };
 
@@ -86,7 +109,8 @@ export default function BannerCarousel({ fallbackSrc, className }) {
             key={slide.id}
             src={slide.imageUrl}
             alt=""
-            className={`${className} transition-opacity duration-1000 ${i === currentIndex ? "opacity-100" : "opacity-0"}`}
+            onClick={() => handleSlideClick(slide)}
+            className={`${className} transition-opacity duration-1000 ${i === currentIndex ? "opacity-100" : "opacity-0"} ${slide.linkTo ? "cursor-pointer" : ""}`}
           />
         ))
       ) : (
@@ -154,16 +178,23 @@ export default function BannerCarousel({ fallbackSrc, className }) {
             ) : (
               <div className="grid grid-cols-2 gap-3">
                 {slides.map((slide) => (
-                  <div key={slide.id} className="relative rounded-lg overflow-hidden border border-outline-variant/20 aspect-video">
-                    <img src={slide.imageUrl} alt="" className="w-full h-full object-cover" />
-                    <button
-                      type="button"
-                      onClick={() => handleDelete(slide)}
-                      title="Eliminar"
-                      className="absolute top-1.5 right-1.5 w-6 h-6 rounded-full bg-error/80 hover:bg-error text-white flex items-center justify-center cursor-pointer border-0"
-                    >
-                      <span className="material-symbols-outlined text-[14px]">close</span>
-                    </button>
+                  <div key={slide.id} className="relative rounded-lg overflow-hidden border border-outline-variant/20">
+                    <div className="relative aspect-video">
+                      <img src={slide.imageUrl} alt="" className="w-full h-full object-cover" />
+                      <button
+                        type="button"
+                        onClick={() => handleDelete(slide)}
+                        title="Eliminar"
+                        className="absolute top-1.5 right-1.5 w-6 h-6 rounded-full bg-error/80 hover:bg-error text-white flex items-center justify-center cursor-pointer border-0"
+                      >
+                        <span className="material-symbols-outlined text-[14px]">close</span>
+                      </button>
+                    </div>
+                    <div className="px-2 py-1 bg-surface-container-high">
+                      <p className="text-[11px] text-on-surface-variant truncate" title={slide.linkTo || ""}>
+                        {slide.linkTo ? `→ ${slide.linkTo}` : "Sin link"}
+                      </p>
+                    </div>
                   </div>
                 ))}
               </div>

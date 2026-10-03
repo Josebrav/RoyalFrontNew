@@ -632,9 +632,10 @@ export const fetchBannerSlides = () => async () => {
     return data;
 };
 
-export const createBannerSlide = (file) => async () => {
+export const createBannerSlide = (file, linkTo) => async () => {
     const formData = new FormData();
     formData.append('image', file);
+    if (linkTo) formData.append('linkTo', linkTo);
     const { data } = await axios.post(`${API_URL}/banner-slides`, formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
     });
