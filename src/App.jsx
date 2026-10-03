@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { Container } from '@chakra-ui/react';
 import { useLocation, Route, Routes } from 'react-router-dom';
@@ -66,22 +66,25 @@ function App() {
     dispatch(fetchSiteContent());
   }, [dispatch]);
 
+  // Antes dependía del objeto currentUser entero, que se re-pide (nueva referencia) en CADA
+  // cambio de ruta (ver el efecto de getUserByEmail más abajo) — así que mientras firstChips
+  // siguiera en false (ej. un usuario que ya no es elegible, para quien nunca se pone en true)
+  // este efecto se volvía a disparar en cada navegación, mostrando el cartel una y otra vez.
+  // Además el cartel se mostraba con un timer fijo SIN importar si el PUT realmente tuvo éxito,
+  // así que hasta un reclamo rechazado (400) terminaba mostrando "¡Felicidades, ganaste...!".
+  // welcomeGiftCheckedRef asegura que el intento se haga una sola vez por usuario, y el cartel
+  // ahora solo se muestra si el PUT efectivamente confirma el bono.
+  const welcomeGiftCheckedRef = useRef(false);
   useEffect(() => {
-    const checkWelcomeGift = async () => {
-      if (currentUser?.id && !currentUser.firstChips) {
-        const timer = setTimeout(() => setShowWelcomeGift(true), 2500);
+    if (!currentUser?.id || currentUser.firstChips || welcomeGiftCheckedRef.current) return;
+    welcomeGiftCheckedRef.current = true;
 
-        try {
-          await axios.put(`${API_URL}/firstchips/${currentUser.id}`);
-        } catch (error) {
-        }
-
-        return () => clearTimeout(timer);
-      }
-    };
-
-    checkWelcomeGift();
-  }, [currentUser]);
+    axios.put(`${API_URL}/firstchips/${currentUser.id}`)
+      .then(() => {
+        setTimeout(() => setShowWelcomeGift(true), 2500);
+      })
+      .catch(() => {});
+  }, [currentUser?.id, currentUser?.firstChips]);
 
   // Lightweight presence signal: lets the admin panel + "jugadores conectados" widget
   // approximate "online now" (and what page/game someone is on) by marking lastSeen
