@@ -438,10 +438,6 @@ export default function Home() {
                 ))}
               </div>
 
-              {/* Games Catalog by Category, filling the leftover height next to the taller sidebar */}
-              <div className="mt-10 pt-8 border-t border-outline-variant/10">
-                <GamesCatalog compact />
-              </div>
             </section>
 
             {/* Top Winners + Online Players */}
@@ -487,17 +483,15 @@ export default function Home() {
                 </div>
               </div>
 
-              {/* Online Players — flex-1 así ocupa el resto del alto del aside en vez de cortarse
-                  a una altura fija, dejando hueco vacío al lado de la columna principal (más alta
-                  por el catálogo compacto que cuelga de ella). */}
-              <div className="flex-1 min-h-[20rem] bg-surface-container-high rounded-xl border border-sky-400/20 overflow-hidden flex flex-col">
+              {/* Online Players */}
+              <div className="bg-surface-container-high rounded-xl border border-sky-400/20 overflow-hidden flex flex-col">
                 <div className="p-4 border-b border-outline-variant/10 flex items-center gap-2">
                   <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse flex-shrink-0"></span>
                   <h3 className="font-bold text-headline-sm font-headline-sm text-white">
                     {otherOnlineUsers.length} {otherOnlineUsers.length === 1 ? t("home.dashboard.jugadorConectado") : t("home.dashboard.jugadoresConectados")}
                   </h3>
                 </div>
-                <div className="flex-1 min-h-0 overflow-y-auto divide-y divide-outline-variant/10">
+                <div className="max-h-80 overflow-y-auto divide-y divide-outline-variant/10">
                   {otherOnlineUsers.length === 0 ? (
                     <p className="text-on-surface-variant text-sm text-center py-6 px-4">
                       {t("home.dashboard.noOtherPlayers")}
@@ -546,6 +540,12 @@ export default function Home() {
               {/* Tarjeta de Giro Diario VIP oculta a pedido (ver handleClaimDailySpin,
                   DailySpinModal y GET /daily-spin/status, todo intacto por si se retoma) */}
             </aside>
+          </div>
+
+          {/* Games Catalog by Category — a todo el ancho (no metido en la columna de 8/12 de
+              arriba), para aprovechar el espacio libre que deja el aside más corto al lado. */}
+          <div className="pt-8 border-t border-outline-variant/10">
+            <GamesCatalog compact />
           </div>
         </main>
 
