@@ -622,7 +622,16 @@ export const updateSiteContentImage = (key, file) => async (dispatch) => {
     const { data } = await axios.put(`${API_URL}/site-content/${key}/image`, formData, {
         headers: { 'Content-Type': 'multipart/form-data' },
     });
-    dispatch({ type: SITE_CONTENT_SUCCESS, payload: { [key]: { type: 'image', imageUrl: data.imageUrl } } });
+    dispatch({ type: SITE_CONTENT_SUCCESS, payload: { [key]: { type: 'image', imageUrl: data.imageUrl, linkTo: data.linkTo ?? null } } });
+};
+
+export const updateSiteContentLink = (key, linkTo) => async (dispatch, getState) => {
+    const { data } = await axios.patch(`${API_URL}/site-content/${key}/link`, { linkTo });
+    const current = getState().siteContent[key];
+    dispatch({
+        type: SITE_CONTENT_SUCCESS,
+        payload: { [key]: { type: 'image', imageUrl: current?.imageUrl ?? '', linkTo: data.linkTo } },
+    });
 };
 
 // ===== Banner carousel slides (the big "Bienvenida" banner on Home) =====

@@ -1,21 +1,58 @@
+import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import Swal from "sweetalert2";
-import { updateSiteContentImage } from "../../redux/actions";
+import { updateSiteContentImage, updateSiteContentLink } from "../../redux/actions";
 import { swalThemeConfig } from "../../utils/formatters";
 
 const MAX_FILE_SIZE = 5 * 1024 * 1024;
 const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp"];
 
-// Renders <img> + (for admins/mods) an overlay "Editar" pencil, as siblings — assumes the
-// caller's own wrapping element already has position:relative (matches every current call site,
-// which are all banner/card containers that are already `relative`), so it doesn't add an extra
-// wrapping div that would fight with the `className` prop's own absolute-positioning needs.
+// Renders <img> + (for admins/mods) overlay "Editar imagen" and "Editar link" buttons, as
+// siblings — assumes the caller's own wrapping element already has position:relative (matches
+// every current call site, which are all banner/card containers that are already `relative`),
+// so it doesn't add an extra wrapping div that would fight with the `className` prop's own
+// absolute-positioning needs.
 export default function EditableImage({ contentKey, fallbackSrc, fallbackIcon = "image", alt = "", className = "", recommendedSize }) {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const currentUser = useSelector((state) => state.currentUser);
   const override = useSelector((state) => state.siteContent[contentKey]);
   const canEdit = currentUser?.role === "admin" || currentUser?.role === "mod";
   const src = override?.type === "image" && override.imageUrl ? override.imageUrl : fallbackSrc;
+  const linkTo = override?.linkTo || null;
+
+  const handleImageClick = (e) => {
+    // Sin link propio: no frena la propagación, así el onClick del contenedor padre (ej. un
+    // "próximamente") sigue funcionando igual que antes de que existiera este sistema de links.
+    if (!linkTo) return;
+    e.stopPropagation();
+    if (/^https?:\/\//i.test(linkTo)) {
+      window.open(linkTo, "_blank", "noopener,noreferrer");
+    } else {
+      navigate(linkTo);
+    }
+  };
+
+  const handleEditLink = async (e) => {
+    e.stopPropagation();
+    const { value: newLink, isConfirmed } = await Swal.fire({
+      title: "Link de destino",
+      input: "text",
+      inputValue: linkTo || "",
+      inputPlaceholder: "/ayuda, /juegos, https://... (opcional)",
+      text: "A dónde navega al tocar esta imagen. Dejalo vacío para que no sea clickeable.",
+      showCancelButton: true,
+      confirmButtonText: "Guardar",
+      cancelButtonText: "Cancelar",
+      ...swalThemeConfig,
+    });
+    if (!isConfirmed) return;
+    try {
+      await dispatch(updateSiteContentLink(contentKey, newLink?.trim() || null));
+    } catch (error) {
+      Swal.fire({ title: "Error", text: "No se pudo actualizar el link.", icon: "error", ...swalThemeConfig });
+    }
+  };
 
   const handleEdit = async (e) => {
     e.stopPropagation();
@@ -46,7 +83,12 @@ export default function EditableImage({ contentKey, fallbackSrc, fallbackIcon = 
   return (
     <>
       {src ? (
-        <img src={src} alt={alt} className={className} />
+        <img
+          src={src}
+          alt={alt}
+          onClick={handleImageClick}
+          className={`${className} ${linkTo ? "cursor-pointer" : ""}`}
+        />
       ) : (
         // Sin imagen en la CMS y sin fallback local (ej. un juego nuevo sin cover todavía) — un
         // <img src={undefined}> se ve roto y muestra el alt como texto crudo. Este placeholder
@@ -56,14 +98,24 @@ export default function EditableImage({ contentKey, fallbackSrc, fallbackIcon = 
         </div>
       )}
       {canEdit && (
-        <button
-          type="button"
-          onClick={handleEdit}
-          title="Editar imagen"
-          className="absolute top-2 right-2 z-10 w-8 h-8 rounded-full bg-black/60 backdrop-blur-sm border border-white/20 text-primary flex items-center justify-center opacity-80 hover:opacity-100 transition-opacity cursor-pointer"
-        >
-          <span className="material-symbols-outlined text-[16px]">edit</span>
-        </button>
+        <div className="absolute top-2 right-2 z-10 flex items-center gap-1.5">
+          <button
+            type="button"
+            onClick={handleEditLink}
+            title="Editar link de destino"
+            className="w-8 h-8 rounded-full bg-black/60 backdrop-blur-sm border border-white/20 text-primary flex items-center justify-center opacity-80 hover:opacity-100 transition-opacity cursor-pointer"
+          >
+            <span className="material-symbols-outlined text-[16px]">link</span>
+          </button>
+          <button
+            type="button"
+            onClick={handleEdit}
+            title="Editar imagen"
+            className="w-8 h-8 rounded-full bg-black/60 backdrop-blur-sm border border-white/20 text-primary flex items-center justify-center opacity-80 hover:opacity-100 transition-opacity cursor-pointer"
+          >
+            <span className="material-symbols-outlined text-[16px]">edit</span>
+          </button>
+        </div>
       )}
     </>
   );
