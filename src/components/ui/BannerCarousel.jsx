@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import Swal from "sweetalert2";
-import { fetchBannerSlides, createBannerSlide, deleteBannerSlide } from "../../redux/actions";
+import { fetchBannerSlides, createBannerSlide, updateBannerSlideLink, deleteBannerSlide } from "../../redux/actions";
 import { swalThemeConfig } from "../../utils/formatters";
 
 const SLIDE_INTERVAL_MS = 6000;
@@ -80,6 +80,27 @@ export default function BannerCarousel({ fallbackSrc, className }) {
       window.open(slide.linkTo, "_blank", "noopener,noreferrer");
     } else {
       navigate(slide.linkTo);
+    }
+  };
+
+  const handleEditLink = async (slide) => {
+    const { value: linkTo, isConfirmed } = await Swal.fire({
+      title: "Link de este banner",
+      input: "text",
+      inputValue: slide.linkTo || "",
+      inputPlaceholder: "/ayuda, /juegos, https://... (opcional)",
+      text: "Dejalo vacío para que no sea clickeable.",
+      showCancelButton: true,
+      confirmButtonText: "Guardar",
+      cancelButtonText: "Cancelar",
+      ...swalThemeConfig,
+    });
+    if (!isConfirmed) return;
+    try {
+      await dispatch(updateBannerSlideLink(slide.id, linkTo?.trim() || null));
+      loadSlides();
+    } catch (error) {
+      Swal.fire({ title: "Error", text: "No se pudo actualizar el link.", icon: "error", ...swalThemeConfig });
     }
   };
 
@@ -190,11 +211,17 @@ export default function BannerCarousel({ fallbackSrc, className }) {
                         <span className="material-symbols-outlined text-[14px]">close</span>
                       </button>
                     </div>
-                    <div className="px-2 py-1 bg-surface-container-high">
-                      <p className="text-[11px] text-on-surface-variant truncate" title={slide.linkTo || ""}>
+                    <button
+                      type="button"
+                      onClick={() => handleEditLink(slide)}
+                      title="Editar link de destino"
+                      className="w-full flex items-center justify-between gap-1 px-2 py-1 bg-surface-container-high hover:bg-surface-container-highest transition-colors cursor-pointer border-0 text-left"
+                    >
+                      <span className="text-[11px] text-on-surface-variant truncate" title={slide.linkTo || ""}>
                         {slide.linkTo ? `→ ${slide.linkTo}` : "Sin link"}
-                      </p>
-                    </div>
+                      </span>
+                      <span className="material-symbols-outlined text-[14px] text-on-surface-variant shrink-0">edit</span>
+                    </button>
                   </div>
                 ))}
               </div>

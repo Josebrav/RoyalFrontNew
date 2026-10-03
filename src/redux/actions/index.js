@@ -642,6 +642,11 @@ export const createBannerSlide = (file, linkTo) => async () => {
     return data;
 };
 
+export const updateBannerSlideLink = (id, linkTo) => async () => {
+    const { data } = await axios.patch(`${API_URL}/banner-slides/${id}`, { linkTo });
+    return data;
+};
+
 export const deleteBannerSlide = (id) => async () => {
     await axios.delete(`${API_URL}/banner-slides/${id}`);
 };
