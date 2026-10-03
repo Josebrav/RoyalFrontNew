@@ -14,9 +14,10 @@ export const CATEGORY_META = {
   cartas: { label: "Cartas", className: "text-[#4f8fe0]", chipClassName: "bg-[#4f8fe0]/15 text-[#4f8fe0] border border-[#4f8fe0]/40" },
   otros: { label: "Otros", className: "text-[#4caf7d]", chipClassName: "bg-[#4caf7d]/15 text-[#4caf7d] border border-[#4caf7d]/40" },
   slots: { label: "Slots", className: "text-[#a855f7]", chipClassName: "bg-[#a855f7]/15 text-[#a855f7] border border-[#a855f7]/40" },
+  mesa: { label: "Mesa", className: "text-[#2dd4bf]", chipClassName: "bg-[#2dd4bf]/15 text-[#2dd4bf] border border-[#2dd4bf]/40" },
 };
 
-export const CATEGORY_ORDER = ["bingo", "casino", "cartas", "otros", "slots"];
+export const CATEGORY_ORDER = ["bingo", "casino", "cartas", "otros", "slots", "mesa"];
 
 /**
  * Static game catalog for the lobby list on Home. Not backend-driven (there's no
@@ -236,6 +237,51 @@ export const GAMES_CATALOG = [
     icon: "diamond",
     description:
       "Gemas brillantes y cascadas de oro: una tragamonedas clásica con multiplicadores en cadena para los amantes de lo simple y lo dorado.",
+  },
+  {
+    slug: "domino",
+    name: "Dominó",
+    category: "mesa",
+    status: "soon",
+    icon: "view_module",
+    description:
+      "El clásico de fichas de toda la vida, ahora online: encadená tus números y dejá a tus rivales sin jugadas.",
+  },
+  {
+    slug: "parchis",
+    name: "Parchís",
+    category: "mesa",
+    status: "soon",
+    icon: "flag",
+    description:
+      "Tirá los dados y llevá tus fichas a casa antes que nadie, en el clásico juego de mesa familiar ahora en RoyalGames.",
+  },
+  {
+    slug: "royal-palabras",
+    name: "Royal Palabras",
+    category: "mesa",
+    status: "soon",
+    icon: "abc",
+    description:
+      "Armá las mejores palabras y sumá puntos contra otros jugadores en este clásico de letras con la mesa de RoyalGames.",
+  },
+  {
+    slug: "damas",
+    name: "Damas",
+    category: "mesa",
+    status: "soon",
+    icon: "grid_on",
+    description:
+      "El juego de tablero de siempre: comé las fichas de tu rival y coroná tus damas para dominar el tablero.",
+  },
+  {
+    slug: "ajedrez",
+    name: "Ajedrez",
+    category: "mesa",
+    status: "soon",
+    icon: "psychology",
+    description:
+      "El juego de estrategia por excelencia llega a RoyalGames: planeá tus jugadas y dale jaque mate a tu rival.",
   },
 ];
 
