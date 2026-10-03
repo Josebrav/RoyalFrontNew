@@ -43,7 +43,7 @@ import RequireAuth from './components/ProtectedRoute/RequireAuth';
 import PaymentSuccess from './components/PaymentStatus/PaymentSuccess';
 import PaymentFailure from './components/PaymentStatus/PaymentFailure';
 import PaymentPending from './components/PaymentStatus/PaymentPending';
-import Vestidor from './components/Vestidor/vestidor';
+import RoyalStore from './components/RoyalStore/royalStore';
 import Friends from './components/Friends/friends';
 import Messages from './components/Messages/messages';
 import GameDetail from './components/Juegos/GameDetail/gameDetail';
@@ -100,7 +100,7 @@ function App() {
   }, [currentUser?.id, location.pathname]);
 
   // Chips, avatar, etc. can change from OUTSIDE this app's own Redux flow — the external
-  // games settle bets directly against the backend with no JWT, and the Vestidor (avatar editor)
+  // games settle bets directly against the backend with no JWT, and the RoyalStore (avatar editor)
   // is its own separate app — so this tab's cached currentUser silently goes stale. Re-fetching
   // on every route change (not on a timer) means you always see fresh data by the time you land
   // on a new page, without forcing a full page reload just to bust the client-side cache.
@@ -111,12 +111,13 @@ function App() {
   }, [location.pathname]);
 
   // El refresh de arriba solo dispara al cambiar de ruta - si te quedás quieto DENTRO de un
-  // juego o del Vestidor (mismos iframes de Unity que le pegan al backend directo, ver comentario
-  // de arriba), nunca se entera de que las fichas cambiaron. Sondeamos cada pocos segundos nada
-  // más que en esas rutas para que la nav siga el saldo casi en vivo mientras se juega/compra.
+  // juego o del RoyalStore (mismos iframes de Unity que le pegan al backend directo, ver
+  // comentario de arriba), nunca se entera de que las fichas cambiaron. Sondeamos cada pocos
+  // segundos nada más que en esas rutas para que la nav siga el saldo casi en vivo mientras se
+  // juega/compra.
   useEffect(() => {
-    const isGameOrVestidor = location.pathname.includes('/game') || location.pathname === '/vestidor';
-    if (!currentUser?.email || !isGameOrVestidor) return;
+    const isGameOrRoyalStore = location.pathname.includes('/game') || location.pathname === '/royalstore';
+    if (!currentUser?.email || !isGameOrRoyalStore) return;
     const interval = setInterval(() => {
       dispatch(getUserByEmail(currentUser.email)).catch(() => {});
     }, 3000);
@@ -182,7 +183,7 @@ function App() {
             <Route path="/game/santawilds" element={<RequireAuth><SantaWilds /></RequireAuth>} />
             <Route path="/game/royalslots" element={<RequireAuth><RoyalSlots /></RequireAuth>} />
             <Route path="/game/sugarcalavera" element={<RequireAuth><SugarCalavera /></RequireAuth>} />
-            <Route path="/vestidor" element={<Vestidor />} />
+            <Route path="/royalstore" element={<RoyalStore />} />
             <Route path="/amigos" element={<Friends />} />
             <Route path="/mensajes" element={<Messages />} />
             <Route path="/mensajes/:nick" element={<Messages />} />

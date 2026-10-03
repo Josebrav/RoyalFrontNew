@@ -397,7 +397,7 @@ const Perfil = ({ isPublic = false }) => {
   const rankMeta = getRankMeta(user.rank);
   const profileBanner = user.role === "admin" ? bannerPerfilDorado : user.role === "mod" ? bannerPerfilVerde : bannerPerfil;
   const roleInsignia = user.role === "admin" ? insigniaAdmin : user.role === "mod" ? insigniaMod : null;
-  // Female Vestidor avatars are rendered taller/closer to the camera than male ones, so in the
+  // Female RoyalStore avatars are rendered taller/closer to the camera than male ones, so in the
   // profile frame they need to be a touch smaller. We shrink from the TOP only (padding-top
   // on the square box) so the feet stay pinned to the same floor line (object-bottom) and it's
   // just the head that comes down. Male avatars are left exactly as-is.
@@ -614,7 +614,7 @@ const Perfil = ({ isPublic = false }) => {
                     { label: "Mis Amigos", icon: "group", to: "/amigos", color: "#a855f7" },
                     { label: "Mis Mensajes", icon: "forum", to: "/mensajes", color: "#2dd4bf" },
                     { label: "Comprar Fichas", icon: "paid", to: "/chips", color: "#4caf7d" },
-                    { label: "Cambiar Avatar", icon: "face_retouching_natural", to: "/vestidor", color: "#e05252" },
+                    { label: "Cambiar Avatar", icon: "face_retouching_natural", to: "/royalstore", color: "#e05252" },
                     { label: "Ayuda", icon: "support_agent", to: "/ayuda", color: "#c9a84c" },
                     ...(user.role === "admin" || user.role === "mod"
                       ? [{ label: "Panel de Administración", icon: "admin_panel_settings", to: "/admin/dashboard", color: "#4f8fe0" }]

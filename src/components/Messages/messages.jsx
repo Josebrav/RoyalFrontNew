@@ -24,7 +24,7 @@ function formatMessageTimestamp(dateString) {
 
 function Avatar({ userId, nick, size = "w-11 h-11" }) {
   // TEMPORAL: vuelto a avatar-image, ver nota en nav.jsx — el avatar-thumbnail actual ancla mal
-  // el recorte desde que la cámara del Vestidor captura el cuerpo completo.
+  // el recorte desde que la cámara del RoyalStore captura el cuerpo completo.
   const avatarSrc = userId ? `${API_URL}/user/${userId}/avatar-image` : null;
   const initials = (nick || "RG").slice(0, 2).toUpperCase();
   return (

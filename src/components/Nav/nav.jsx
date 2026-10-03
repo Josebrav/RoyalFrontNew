@@ -50,7 +50,7 @@ export default function Navbar() {
   // "pegado abajo" del lienzo asumiendo que la captura es solo de pecho para arriba — desde que
   // la cámara captura el cuerpo completo, eso ancla el cuadrado en las piernas, no en la cabeza.
   // Volver a activar avatar-thumbnail recién cuando ExtractTopSquareThumbnail esté arreglado
-  // (ver SaveAvatarButton.cs) Y cada usuario haya vuelto a guardar su avatar en el Vestidor.
+  // (ver SaveAvatarButton.cs) Y cada usuario haya vuelto a guardar su avatar en el RoyalStore.
   const avatarSrc = currentUser?.id
     ? `${API_URL}/user/${currentUser.id}/avatar-image?v=${currentUser.lastSeen ? new Date(currentUser.lastSeen).getTime() : 0}`
     : "https://lh3.googleusercontent.com/aida-public/AB6AXuCpCcNDDLhupT0iOwy1efwVKGf6ATUKCy6U7q50kyjk86DZ0ESSWDYB3IrG_VbQ2nLajCDmLvXOct59w89ERq7kJydta4x2rtj18hF3ffoEPNHFxRiAJHXOp4-joRLAss2GIpXRWXEpfCcn17eLUjcdKtMQDo4p-lNCzppHIIyPmM_WXToorkNt3NbXKLAfPkWDm4ln0gxkOhUv8fxWHOTdBFnPxsnTABAi2RPFBg9hCCwRzQGJ6YIBJ6Bvk8_pA9vPVUZpUJk60PQ";
@@ -166,7 +166,7 @@ export default function Navbar() {
             <div className="hidden sm:flex items-center gap-3 bg-surface-container-high border border-primary/20 rounded-full pl-1 pr-1 py-1 max-w-[18rem] h-16 hover:border-primary/40 transition-colors">
               <button
                 type="button"
-                onClick={() => navigate('/vestidor')}
+                onClick={() => navigate('/royalstore')}
                 title="Cambiar avatar"
                 className="w-14 h-14 rounded-full overflow-hidden border-2 border-primary/60 flex-shrink-0 bg-surface-container-lowest transition-transform hover:scale-105 focus:outline-none cursor-pointer p-0"
               >
