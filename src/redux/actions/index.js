@@ -63,7 +63,11 @@ export const signupAndLogin = (userData) => {
     return async (dispatch) => {
         try {
             const signupResponse = await axios.post(`${API_URL}/signup`, userData);
-            const loginResponse = await axios.post(`${API_URL}/auth/login`, {
+            // Ruta relativa (no API_URL) a propósito: ver el comentario grande en
+            // authService.js sobre por qué /auth/* tiene que ser mismo-origen para que la
+            // cookie httpOnly del refresh token no quede sujeta al bloqueo de cookies de
+            // terceros en mobile.
+            const loginResponse = await axios.post(`/auth/login`, {
                 identifier: userData.email,
                 password: userData.password,
             });

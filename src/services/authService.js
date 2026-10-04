@@ -11,6 +11,18 @@ import { tokenStore } from '../api/tokenStore';
  * sesión larga la sostiene un refresh token opaco en una cookie httpOnly que el
  * backend setea/lee solo (JS nunca lo toca); POST /auth/refresh la cambia por un
  * access token nuevo. Ver src/api/tokenStore.js y src/api/axiosInterceptors.js.
+ *
+ * Los 4 endpoints de /auth/* (login, google, refresh, logout) usan rutas RELATIVAS
+ * (sin API_URL) a propósito — no porque hablen con un servidor distinto, sino para que
+ * el navegador los vea como mismo-origen. api.royalgames.lat es un dominio aparte del
+ * frontend (más todavía para royaljuegos.com o los *.vercel.app de EN/PT, que ni
+ * comparten dominio raíz), así que la cookie httpOnly del refresh token viaja como
+ * cookie de TERCEROS — y los navegadores mobile (sobre todo) la bloquean o la descartan
+ * seguido, cerrando la sesión sin aviso. vercel.json (prod) y vite.config.js (dev) hacen
+ * de proxy de /auth/* hacia el backend real, así para el navegador la cookie es de
+ * primera parte y deja de estar sujeta a ese bloqueo. El resto de los endpoints (que
+ * usan el access token en el header Authorization, no la cookie) siguen por API_URL
+ * directo sin problema.
  */
 export const authService = {
   /**
@@ -38,7 +50,7 @@ export const authService = {
    */
   login: async (identifier, password) => {
     try {
-      const response = await axios.post(`${API_URL}/auth/login`, {
+      const response = await axios.post(`/auth/login`, {
         identifier,
         password,
       });
@@ -59,7 +71,7 @@ export const authService = {
    */
   loginWithGoogle: async (googleToken) => {
     try {
-      const response = await axios.post(`${API_URL}/auth/google`, {
+      const response = await axios.post(`/auth/google`, {
         token: googleToken,
       });
       const { access_token } = response.data;
@@ -79,7 +91,7 @@ export const authService = {
    */
   refreshSession: async () => {
     const response = await axios.post(
-      `${API_URL}/auth/refresh`,
+      `/auth/refresh`,
       {},
       { headers: { 'X-Refresh': '1' } },
     );
@@ -96,7 +108,7 @@ export const authService = {
    */
   logout: async () => {
     try {
-      await axios.post(`${API_URL}/auth/logout`);
+      await axios.post(`/auth/logout`);
     } catch (error) {
       // No-op: igual limpiamos localmente abajo.
     }
