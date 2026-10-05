@@ -7,10 +7,6 @@
     <link rel="icon" type="image/svg+xml" href="/logo.avif" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&amp;family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
-    <!-- ⚠️ PayPal Client ID should be injected at build time from environment variables -->
-    <!-- For development: Update this with your own PayPal Client ID or use import.meta.env in React components -->
-    <script id="paypal-script"></script>
-
     <!-- Google Identity Services -->
     <script src="https://accounts.google.com/gsi/client" async defer></script>
 
@@ -21,20 +17,6 @@
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
     <script type="module">
-      // Inject PayPal script dynamically from environment variable. Tiene que ser
-      // type="module": import.meta.env solo es válido dentro de un módulo ES — como
-      // <script> normal, esto tiraba "Cannot use 'import.meta' outside a module" en la
-      // consola de cualquiera que la mirara, y el SDK de PayPal nunca llegaba a cargarse.
-      function initPayPalScript() {
-        const clientId = import.meta.env.VITE_PAYPAL_CLIENT_ID;
-        if (clientId) {
-          const script = document.getElementById('paypal-script');
-          script.src = `https://www.paypal.com/sdk/js?client-id=${clientId}&currency=USD`;
-          script.async = true;
-        }
-      }
-      initPayPalScript();
-
       // Sitios en inglés/portugués (VITE_SITE_LOCALE) corrigen el lang del documento acá — el
       // atributo estático de arriba queda en "es" (el sitio real en producción) por default.
       const siteLocale = import.meta.env.VITE_SITE_LOCALE;
