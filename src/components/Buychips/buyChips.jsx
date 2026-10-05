@@ -76,19 +76,14 @@ export default function BuyChips() {
   // Navigation tabs state: "deposit", "history"
   const [activeTab, setActiveTab] = useState(searchParams.get("tab") === "history" ? "history" : "deposit");
   
-  // Active payment method: "paypal", "mercadopago", "visa", "crypto"
+  // Active payment method: "paypal" o "mercadopago". Tarjeta y cripto se sacaron porque
+  // eran simuladas (no cobraban nada); vuelven cuando haya una pasarela real detrás.
   const [paymentMethod, setPaymentMethod] = useState("paypal");
 
   // Real payment history from database
   const [paymentHistory, setPaymentHistory] = useState([]);
   const [loadingHistory, setLoadingHistory] = useState(false);
   const [historyTypeFilter, setHistoryTypeFilter] = useState("all");
-
-  // Simulated credit card form state
-  const [ccNumber, setCcNumber] = useState("");
-  const [ccName, setCcName] = useState("");
-  const [ccExpiry, setCcExpiry] = useState("");
-  const [ccCvv, setCcCvv] = useState("");
 
   // Resolve currency/exchange/symbol from user's profile country
   const resolvedKeyForUser = Object.keys(countryConfig).find((k) => {
@@ -221,41 +216,6 @@ export default function BuyChips() {
         confirmButtonColor: "#C9A84C",
       });
     }
-  };
-
-  // Simulated Credit Card checkout flow (offline / mock)
-  const handleCreditCardPay = (e) => {
-    e.preventDefault();
-    if (!ccNumber || !ccName || !ccExpiry || !ccCvv) {
-      Swal.fire({
-        icon: "error",
-        title: "Formulario Incompleto",
-        text: "Por favor, llena todos los campos de la tarjeta.",
-        confirmButtonColor: "#C9A84C",
-      });
-      return;
-    }
-
-    Swal.fire({
-      title: "Procesando pago de tarjeta...",
-      text: "Verificando con tu banco emisor...",
-      allowOutsideClick: false,
-      timer: 2000,
-      didOpen: () => {
-        Swal.showLoading();
-      }
-    }).then(async () => {
-      Swal.fire({
-        icon: "info",
-        title: "Pasarela Simulada",
-        text: "Las tarjetas simuladas sirven con fines visuales de testeo. Por favor usa Mercado Pago o PayPal para adquirir saldo real.",
-        confirmButtonColor: "#C9A84C",
-      });
-      setCcNumber("");
-      setCcName("");
-      setCcExpiry("");
-      setCcCvv("");
-    });
   };
 
   // Helper formatting for platform name
@@ -456,7 +416,7 @@ export default function BuyChips() {
                     <label className="font-label-lg text-label-lg text-primary mb-3 block uppercase tracking-wider">
                       2. Método de Pago Disponible
                     </label>
-                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+                    <div className="grid grid-cols-2 gap-4">
                       
                       {/* PayPal Button */}
                       {currency !== "MXN" && (
@@ -486,32 +446,6 @@ export default function BuyChips() {
                         <span className="text-xs font-bold text-white">Mercado Pago</span>
                       </button>
 
-                      {/* Visa / MasterCard */}
-                      <button
-                        onClick={() => setPaymentMethod("visa")}
-                        className={`glass-card p-4 rounded-xl flex flex-col items-center justify-center gap-2 border transition-all ${
-                          paymentMethod === "visa"
-                            ? "border-primary bg-primary/5 shadow-md"
-                            : "border-outline-variant/30 hover:border-primary/45"
-                        }`}
-                      >
-                        <span className="material-symbols-outlined text-primary text-[28px]">credit_card</span>
-                        <span className="text-xs font-bold text-white">Tarjeta de Crédito</span>
-                      </button>
-
-                      {/* Crypto Options */}
-                      <button
-                        onClick={() => setPaymentMethod("crypto")}
-                        className={`glass-card p-4 rounded-xl flex flex-col items-center justify-center gap-2 border transition-all ${
-                          paymentMethod === "crypto"
-                            ? "border-primary bg-primary/5 shadow-md"
-                            : "border-outline-variant/30 hover:border-primary/45"
-                        }`}
-                      >
-                        <span className="material-symbols-outlined text-primary text-[28px]">currency_bitcoin</span>
-                        <span className="text-xs font-bold text-white">Criptomonedas</span>
-                      </button>
-
                     </div>
 
                     <div className="mt-6 p-4 bg-primary/5 rounded-xl border border-primary/20 flex gap-3 text-left">
@@ -519,8 +453,6 @@ export default function BuyChips() {
                       <p className="text-xs text-on-surface-variant leading-relaxed">
                         {paymentMethod === "paypal" && "Los depósitos a través de PayPal se acreditan instantáneamente tras la confirmación de la venta en nuestro backend."}
                         {paymentMethod === "mercadopago" && "Mediante Mercado Pago redirigiremos tu sesión de forma segura para completar el pago. Recibimos USD y MXN locales."}
-                        {paymentMethod === "visa" && "Las tarjetas se manejan de forma segura. Esta opción simula los flujos del banco emisor."}
-                        {paymentMethod === "crypto" && "Recibe un bono del 10% adicional al depositar con criptomonedas (BTC / USDT)."}
                       </p>
                     </div>
                   </div>
@@ -653,95 +585,6 @@ export default function BuyChips() {
                           <span className="material-symbols-outlined text-[20px] font-bold">qr_code_scanner</span>
                           Proceder con Mercado Pago
                         </button>
-                      )}
-
-                      {/* CREDIT CARD ACTIVE RENDER (SIMULATED FORM) */}
-                      {paymentMethod === "visa" && (
-                        <form onSubmit={handleCreditCardPay} className="space-y-3 text-left">
-                          <div>
-                            <input
-                              type="text"
-                              placeholder="Número de Tarjeta"
-                              value={ccNumber}
-                              onChange={(e) => setCcNumber(e.target.value.replace(/\D/g, '').slice(0, 16))}
-                              className="w-full bg-[#0A0A0F] border border-outline-variant/30 rounded-xl py-3 px-4 text-sm text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all"
-                            />
-                          </div>
-                          <div className="grid grid-cols-2 gap-3">
-                            <input
-                              type="text"
-                              placeholder="Exp (MM/AA)"
-                              value={ccExpiry}
-                              onChange={(e) => setCcExpiry(e.target.value.slice(0, 5))}
-                              className="bg-[#0A0A0F] border border-outline-variant/30 rounded-xl py-3 px-4 text-sm text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all"
-                            />
-                            <input
-                              type="password"
-                              placeholder="CVV"
-                              value={ccCvv}
-                              onChange={(e) => setCcCvv(e.target.value.replace(/\D/g, '').slice(0, 3))}
-                              className="bg-[#0A0A0F] border border-outline-variant/30 rounded-xl py-3 px-4 text-sm text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all"
-                            />
-                          </div>
-                          <div>
-                            <input
-                              type="text"
-                              placeholder="Nombre del Tarjetahabiente"
-                              value={ccName}
-                              onChange={(e) => setCcName(e.target.value.toUpperCase())}
-                              className="w-full bg-[#0A0A0F] border border-outline-variant/30 rounded-xl py-3 px-4 text-sm text-white focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all"
-                            />
-                          </div>
-                          <button
-                            type="submit"
-                            className="w-full royal-gold-gradient py-4 rounded-xl text-[#0A0A0F] font-bold text-md uppercase tracking-wider hover:brightness-110 active:scale-[0.98] transition-all shadow-lg royal-gold-glow flex items-center justify-center gap-2 cursor-pointer border-0 mt-2"
-                          >
-                            <span className="material-symbols-outlined text-[20px] font-bold">shield</span>
-                            Depositar Ahora
-                          </button>
-                        </form>
-                      )}
-
-                      {/* CRYPTO ACTIVE RENDER (SIMULATED ADDRESS) */}
-                      {paymentMethod === "crypto" && (
-                        <div className="space-y-4 text-left p-4 border border-[#2A2A36] rounded-xl bg-[#0A0A0F]">
-                          <div className="flex justify-between items-center">
-                            <span className="text-xs font-bold text-white">Depósito BTC / USDT (TRC20)</span>
-                            <span className="px-2 py-0.5 rounded bg-primary/20 text-primary text-[10px] font-bold">+10% BONO</span>
-                          </div>
-                          
-                          <div className="space-y-1">
-                            <p className="text-[10px] text-on-surface-variant uppercase tracking-wider">Dirección de depósito de red</p>
-                            <div className="flex gap-2 items-center">
-                              <input
-                                type="text"
-                                readOnly
-                                value="TY51c7t1e6Z9P1eZ98pP1eA918hC9A84CF"
-                                className="w-full bg-surface-container-lowest border border-outline-variant/30 rounded-lg py-2 px-3 text-xs text-on-surface-variant select-all outline-none font-mono"
-                              />
-                              <button
-                                onClick={() => {
-                                  navigator.clipboard.writeText("TY51c7t1e6Z9P1eZ98pP1eA918hC9A84CF");
-                                  Swal.fire({
-                                    toast: true,
-                                    position: 'top-end',
-                                    icon: 'success',
-                                    title: 'Dirección copiada al portapapeles',
-                                    showConfirmButton: false,
-                                    timer: 1500
-                                  });
-                                }}
-                                className="p-2 border border-outline-variant/30 rounded-lg hover:bg-surface-variant/50 transition-colors text-primary flex items-center justify-center bg-transparent"
-                              >
-                                <span className="material-symbols-outlined text-sm">content_copy</span>
-                              </button>
-                            </div>
-                          </div>
-                          
-                          <p className="text-[10px] text-on-surface-variant leading-relaxed">
-                            Envía tus fondos a la dirección anterior y se acreditarán automáticamente tras 2 confirmaciones en el blockchain.
-                          </p>
-                        </div>
                       )}
 
                       {/* SSL Security badges */}
