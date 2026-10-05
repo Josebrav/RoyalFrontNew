@@ -29,6 +29,10 @@ const countryConfig = {
   "resto del mundo": { name: "Resto del Mundo (USD)", currency: "USD", exchangeRate: 1, symbol: "$" },
 };
 
+// Client id de PayPal: tiene que ser del mismo entorno (sandbox o live) que PAYPAL_MODE
+// en el backend. Sin él no se muestra PayPal, en vez de caer a un id fijo de otro entorno.
+const PAYPAL_CLIENT_ID = import.meta.env.VITE_PAYPAL_CLIENT_ID;
+
 // Mercado Pago usa una cuenta vendedora distinta por país (cada una solo liquida
 // en su propia moneda) — mapeamos la moneda resuelta al código de país del backend.
 const CURRENCY_TO_MERCADOPAGO_COUNTRY = { COP: "co", ARS: "ar", MXN: "mx" };
@@ -238,7 +242,7 @@ export default function BuyChips() {
   return (
     <PayPalScriptProvider
       options={{
-        "client-id": import.meta.env.VITE_PAYPAL_CLIENT_ID || "Ae36OchhdN8RQxByUJu4LH2G8wKlT0Ps3Id2Eky_7KdMk3ADh1aTzEuqzLowplxWkXMFVNumhm7TUMOC",
+        "client-id": PAYPAL_CLIENT_ID || "sb",
         currency: "USD",
       }}
     >
@@ -419,7 +423,7 @@ export default function BuyChips() {
                     <div className="grid grid-cols-2 gap-4">
                       
                       {/* PayPal Button */}
-                      {currency !== "MXN" && (
+                      {currency !== "MXN" && PAYPAL_CLIENT_ID && (
                         <button
                           onClick={() => setPaymentMethod("paypal")}
                           className={`glass-card p-4 rounded-xl flex flex-col items-center justify-center gap-2 border transition-all ${
@@ -497,7 +501,7 @@ export default function BuyChips() {
                     <div className="mt-8 pt-6 border-t border-outline-variant/10 relative z-10 space-y-4">
                       
                       {/* PAYPAL ACTIVE RENDER */}
-                      {paymentMethod === "paypal" && (
+                      {paymentMethod === "paypal" && PAYPAL_CLIENT_ID && (
                         <div className="w-full">
                           <PayPalButtons
                             style={{ layout: "vertical", shape: "pill", label: "pay" }}
