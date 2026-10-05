@@ -33,7 +33,9 @@ const countryConfig = {
 // en su propia moneda) — mapeamos la moneda resuelta al código de país del backend.
 const CURRENCY_TO_MERCADOPAGO_COUNTRY = { COP: "co", ARS: "ar", MXN: "mx" };
 
-// Opciones de fichas disponibles
+// Paquetes de fichas, solo para mostrar. El backend tiene el catálogo real
+// (RoyalGamesBackend/src/modules/payments/chip-packages.ts) y decide fichas y precio
+// a partir del `id`: si cambiás algo acá, cambialo también allá.
 const chipOptions = [
   { id: 1, basePrice: 1, amount: 500000, image: quinientosmil },
   { id: 2, basePrice: 2, amount: 1000000, image: millon },
@@ -183,13 +185,10 @@ export default function BuyChips() {
       return;
     }
 
-    // Spec Requirement: price must be a string formatted with 2 decimal places
-    const formattedPrice = (selectedChip.basePrice * exchangeRate).toFixed(2);
-
+    // Solo mandamos el paquete: fichas y precio los calcula el backend.
     const payload = {
       userId: currentUser.id,
-      chips: parseInt(selectedChip.amount, 10), // Spec Requirement: integer
-      price: formattedPrice, // Spec Requirement: string formatted
+      packageId: selectedChip.id,
     };
 
     try {
@@ -571,17 +570,11 @@ export default function BuyChips() {
                           <PayPalButtons
                             style={{ layout: "vertical", shape: "pill", label: "pay" }}
                             createOrder={async (data, actions) => {
-                              // PayPal siempre cobra en USD (ver backend: currency_code fijo en 'USD'),
-                              // así que acá NO se multiplica por exchangeRate — eso es solo para
-                              // convertir a moneda local en el flujo de Mercado Pago.
-                              const priceStr = selectedChip.basePrice.toFixed(2);
-                              const chipsInt = parseInt(selectedChip.amount, 10);
-                              
+                              // Solo mandamos el paquete: el backend cobra su precio en USD.
                               try {
                                 const response = await axios.post(`${API_URL}/paypal/create-order`, {
                                   userId: currentUser?.id,
-                                  price: priceStr,
-                                  chips: chipsInt,
+                                  packageId: selectedChip.id,
                                 });
                                 return response.data.orderId; // Return orderId to PayPal SDK
                               } catch (err) {
@@ -596,9 +589,6 @@ export default function BuyChips() {
                             }}
                             onApprove={async (data, actions) => {
                               // Spec Requirement: Call /capture-paypal-order to close sale and credit chips
-                              // (mismo motivo que en createOrder: PayPal siempre cobra en USD)
-                              const priceStr = selectedChip.basePrice.toFixed(2);
-                              const chipsInt = parseInt(selectedChip.amount, 10);
 
                               Swal.fire({
                                 title: "Capturando Pago...",
@@ -613,8 +603,7 @@ export default function BuyChips() {
                                 const response = await axios.post(`${API_URL}/capture-paypal-order`, {
                                   orderId: data.orderID,
                                   userId: currentUser?.id,
-                                  chips: chipsInt,
-                                  price: priceStr,
+                                  packageId: selectedChip.id,
                                 });
 
                                 Swal.fire({
