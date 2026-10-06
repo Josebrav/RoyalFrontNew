@@ -37,6 +37,18 @@ function Footer() {
               <InstagramIcon className="w-4 h-4" />
             </a>
           </div>
+
+          {/* Datos de contacto visibles (mail + teléfono), no solo detrás de un link a /contacto */}
+          <div className="flex flex-col gap-2 mt-6 text-sm normal-case font-normal">
+            <a href="mailto:royalgames2025@gmail.com" className="flex items-center gap-2 text-on-surface-variant hover:text-primary transition-colors">
+              <span className="material-symbols-outlined text-[18px]">mail</span>
+              royalgames2025@gmail.com
+            </a>
+            <a href="tel:+542996262455" className="flex items-center gap-2 text-on-surface-variant hover:text-primary transition-colors">
+              <span className="material-symbols-outlined text-[18px]">call</span>
+              +54 2996 26-2455
+            </a>
+          </div>
         </div>
 
         {/* Links grid */}
