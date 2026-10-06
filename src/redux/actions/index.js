@@ -372,20 +372,6 @@ export const unblockUser = (userId) => async (dispatch) => {
     }
 };
 
-// ===== Chips (gift) =====
-
-export const giftChips = (toUserId, amount) => async (dispatch, getState) => {
-    try {
-        await axios.post(`${API_URL}/chips/gift`, { toUserId, amount });
-        // Refrescar el saldo propio tras regalar fichas. Vía email (endpoint con guard,
-        // datos completos), no vía /user-nick que ahora es una proyección pública.
-        const email = getState().currentUser?.email;
-        if (email) dispatch(getUserByEmail(email));
-    } catch (error) {
-        throw error;
-    }
-};
-
 // ===== Admin =====
 
 export const fetchAdminOverview = (includeBots = false) => async (dispatch) => {

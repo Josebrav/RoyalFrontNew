@@ -21,7 +21,6 @@ import {
   fetchBlockStatus,
   blockUser,
   unblockUser,
-  giftChips,
   fetchUserTrophies,
 } from "./../../redux/actions/index";
 import RankBadge from "../ui/RankBadge/rankBadge";
@@ -324,41 +323,6 @@ const Perfil = ({ isPublic = false }) => {
     }
   };
 
-  const handleGiftChips = async () => {
-    const { value: amount } = await Swal.fire({
-      title: `Regalar fichas a ${capitalize(user.nick)}`,
-      input: "number",
-      inputLabel: "Cantidad de fichas",
-      inputAttributes: { min: 1, step: 1 },
-      showCancelButton: true,
-      confirmButtonText: "Regalar",
-      cancelButtonText: "Cancelar",
-      confirmButtonColor: "#C9A84C",
-      ...swalThemeConfig,
-      inputValidator: (value) => {
-        if (!value || Number(value) < 1) return "Ingresá una cantidad válida.";
-        if (Number(value) > (currentUser?.chips || 0)) return "No tenés fichas suficientes.";
-      },
-    });
-    if (!amount) return;
-    try {
-      await dispatch(giftChips(user.id, Number(amount)));
-      Swal.fire({
-        icon: "success",
-        title: "¡Fichas enviadas!",
-        text: `Le regalaste ${new Intl.NumberFormat('es-ES').format(Number(amount))} fichas a ${capitalize(user.nick)}.`,
-        confirmButtonColor: "#C9A84C",
-      });
-    } catch (error) {
-      Swal.fire({
-        title: "No se pudo completar el regalo",
-        text: error.response?.data?.message || "Inténtalo de nuevo más tarde.",
-        icon: "error",
-        ...swalThemeConfig,
-      });
-    }
-  };
-
   const handleBlockToggle = async () => {
     const isBlocked = !!blockStatus?.blockedByMe;
     if (isBlocked) {
@@ -639,17 +603,8 @@ const Perfil = ({ isPublic = false }) => {
                   <div className="flex flex-col">
                     <button
                       type="button"
-                      onClick={handleGiftChips}
-                      className="flex items-center gap-3 px-6 py-3 text-left bg-transparent border-0 border-t border-outline-variant/10 first:border-t-0 hover:bg-surface-variant/30 transition-colors cursor-pointer text-on-surface"
-                    >
-                      <span className="material-symbols-outlined text-primary text-[20px]">redeem</span>
-                      <span className="font-label-lg text-label-lg">Regalar Fichas</span>
-                    </button>
-
-                    <button
-                      type="button"
                       onClick={showRankBenefits}
-                      className="flex items-center gap-3 px-6 py-3 text-left bg-transparent border-0 border-t border-outline-variant/10 hover:bg-surface-variant/30 transition-colors cursor-pointer text-on-surface"
+                      className="flex items-center gap-3 px-6 py-3 text-left bg-transparent border-0 border-t border-outline-variant/10 first:border-t-0 hover:bg-surface-variant/30 transition-colors cursor-pointer text-on-surface"
                     >
                       <span className="material-symbols-outlined text-primary text-[20px]">workspace_premium</span>
                       <span className="font-label-lg text-label-lg">Ver Puntuación</span>
