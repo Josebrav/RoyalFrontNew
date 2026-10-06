@@ -4,12 +4,12 @@ import { LOCALE } from "../../i18n/locale";
 const CONTENT = {
   es: {
     title: "Política de Privacidad",
-    updatedAt: "27/09/2026",
+    updatedAt: "06/10/2026",
     intro: "En RoyalGames jugamos con fichas ficticias, pero nos tomamos en serio el cuidado de tus datos reales. Esta política cumple con la Ley 25.326 de Protección de Datos Personales de la República Argentina, y acá te contamos, en criollo, qué información guardamos, para qué la usamos y qué derechos tenés sobre ella.",
     sections: [
       {
         title: "1. Quiénes somos",
-        content: "RoyalGames (royalgames.lat) es una plataforma de entretenimiento social operada desde Argentina, responsable del tratamiento de los datos personales que recopilamos a través del sitio. Para cualquier consulta, reclamo o ejercicio de tus derechos sobre tus datos, podés escribirnos a royalgames2025@gmail.com.",
+        content: "RoyalGames (royalgames.lat) es una plataforma de entretenimiento social operada por José Santos Bravo Parada (DNI 39.129.716, CUIL 23-39129716-9), persona física responsable del tratamiento de los datos personales que recopilamos a través del sitio. Para cualquier consulta, reclamo o ejercicio de tus derechos sobre tus datos, podés escribirnos a royalgames2025@gmail.com.",
       },
       {
         title: "2. Qué datos recopilamos",
@@ -63,12 +63,12 @@ const CONTENT = {
   },
   en: {
     title: "Privacy Policy",
-    updatedAt: "09/27/2026",
+    updatedAt: "10/06/2026",
     intro: "At RoyalGames we play with fictional chips, but we take the care of your real data seriously. This policy follows Argentina's Personal Data Protection Law (Ley 25.326), and here's a plain-language rundown of what information we keep, what we use it for, and what rights you have over it.",
     sections: [
       {
         title: "1. Who we are",
-        content: "RoyalGames (royalgames.lat) is a social entertainment platform operated from Argentina, responsible for the personal data we collect through the site. For any question, complaint, or to exercise your rights over your data, you can write to us at royalgames2025@gmail.com.",
+        content: "RoyalGames (royalgames.lat) is a social entertainment platform operated by José Santos Bravo Parada (Argentine National ID / DNI 39.129.716, CUIL 23-39129716-9), the individual responsible for processing the personal data we collect through the site. For any question, complaint, or to exercise your rights over your data, you can write to us at royalgames2025@gmail.com.",
       },
       {
         title: "2. What data we collect",
@@ -122,12 +122,12 @@ const CONTENT = {
   },
   pt: {
     title: "Política de Privacidade",
-    updatedAt: "27/09/2026",
+    updatedAt: "06/10/2026",
     intro: "No RoyalGames jogamos com fichas fictícias, mas levamos a sério o cuidado com seus dados reais. Esta política segue a Lei 25.326 de Proteção de Dados Pessoais da Argentina, e aqui explicamos, em linguagem simples, quais informações guardamos, para que as usamos e quais direitos você tem sobre elas.",
     sections: [
       {
         title: "1. Quem somos",
-        content: "O RoyalGames (royalgames.lat) é uma plataforma de entretenimento social operada a partir da Argentina, responsável pelo tratamento dos dados pessoais que coletamos através do site. Para qualquer dúvida, reclamação ou para exercer seus direitos sobre seus dados, escreva para royalgames2025@gmail.com.",
+        content: "O RoyalGames (royalgames.lat) é uma plataforma de entretenimento social operada por José Santos Bravo Parada (DNI 39.129.716, CUIL 23-39129716-9), pessoa física responsável pelo tratamento dos dados pessoais que coletamos através do site. Para qualquer dúvida, reclamação ou para exercer seus direitos sobre seus dados, escreva para royalgames2025@gmail.com.",
       },
       {
         title: "2. Quais dados coletamos",
