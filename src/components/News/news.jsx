@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import Swal from "sweetalert2";
 import { fetchNews, createNewsArticle, updateNewsArticle, deleteNewsArticle } from "../../redux/actions";
 import { swalThemeConfig } from "../../utils/formatters";
+import { SOCIAL_LINKS, FacebookIcon, InstagramIcon } from "../ui/SocialIcons";
 
 const TAG_META = {
   Lanzamiento: "text-primary bg-primary/10 border-primary/30",
@@ -227,6 +228,30 @@ export default function News() {
             Crear Noticia
           </button>
         )}
+      </div>
+
+      <div className="glass-card rounded-xl p-5 flex items-center justify-between gap-4 flex-wrap mb-8">
+        <p className="text-on-surface-variant text-sm font-bold">Seguinos para no perderte nada</p>
+        <div className="flex items-center gap-3">
+          <a
+            href={SOCIAL_LINKS.facebook}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-on-surface-variant hover:text-primary hover:border-primary/40 transition-colors"
+            aria-label="Facebook"
+          >
+            <FacebookIcon className="w-5 h-5" />
+          </a>
+          <a
+            href={SOCIAL_LINKS.instagram}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-on-surface-variant hover:text-primary hover:border-primary/40 transition-colors"
+            aria-label="Instagram"
+          >
+            <InstagramIcon className="w-5 h-5" />
+          </a>
+        </div>
       </div>
 
       {novedades.length === 0 ? (

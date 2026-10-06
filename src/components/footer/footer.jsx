@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import rgamesLogo from '../../assets/LogoOficial.PNG';
 import { t } from '../../i18n/strings';
+import { SOCIAL_LINKS, FacebookIcon, InstagramIcon } from '../ui/SocialIcons';
 
 function Footer() {
   return (
@@ -16,6 +17,26 @@ function Footer() {
           <p className="text-on-surface-variant text-sm font-light leading-relaxed mb-6">
             {t("footer.tagline")}
           </p>
+          <div className="flex items-center gap-3">
+            <a
+              href={SOCIAL_LINKS.facebook}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Facebook"
+              className="w-9 h-9 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-on-surface-variant hover:text-primary hover:border-primary/40 transition-colors"
+            >
+              <FacebookIcon className="w-4 h-4" />
+            </a>
+            <a
+              href={SOCIAL_LINKS.instagram}
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Instagram"
+              className="w-9 h-9 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-on-surface-variant hover:text-primary hover:border-primary/40 transition-colors"
+            >
+              <InstagramIcon className="w-4 h-4" />
+            </a>
+          </div>
         </div>
 
         {/* Links grid */}

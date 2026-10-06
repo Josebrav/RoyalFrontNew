@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { SOCIAL_LINKS, FacebookIcon, InstagramIcon } from "../ui/SocialIcons";
 
 export default function Contact() {
   const channels = [
@@ -9,16 +10,16 @@ export default function Contact() {
       href: "mailto:royalgames2025@gmail.com",
     },
     {
-      icon: "photo_camera",
+      icon: InstagramIcon,
       label: "Instagram",
-      value: "@RoyalGames",
-      href: "https://instagram.com",
+      value: "@royalgamesoficial",
+      href: SOCIAL_LINKS.instagram,
     },
     {
-      icon: "thumb_up",
+      icon: FacebookIcon,
       label: "Facebook",
       value: "RoyalGames",
-      href: "https://facebook.com",
+      href: SOCIAL_LINKS.facebook,
     },
   ];
 
@@ -30,23 +31,30 @@ export default function Contact() {
       </p>
 
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        {channels.map((channel) => (
-          <a
-            key={channel.label}
-            href={channel.href}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="glass-card rounded-xl p-6 flex flex-col items-center text-center gap-3 hover:border-primary/40 transition-all border border-transparent"
-          >
-            <span className="w-12 h-12 rounded-full gold-gradient flex items-center justify-center">
-              <span className="material-symbols-outlined text-black text-2xl">{channel.icon}</span>
-            </span>
-            <div>
-              <p className="text-white font-bold">{channel.label}</p>
-              <p className="text-on-surface-variant text-sm">{channel.value}</p>
-            </div>
-          </a>
-        ))}
+        {channels.map((channel) => {
+          const Icon = channel.icon;
+          return (
+            <a
+              key={channel.label}
+              href={channel.href}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="glass-card rounded-xl p-6 flex flex-col items-center text-center gap-3 hover:border-primary/40 transition-all border border-transparent"
+            >
+              <span className="w-12 h-12 rounded-full gold-gradient flex items-center justify-center">
+                {typeof Icon === "string" ? (
+                  <span className="material-symbols-outlined text-black text-2xl">{Icon}</span>
+                ) : (
+                  <Icon className="w-6 h-6 text-black" />
+                )}
+              </span>
+              <div>
+                <p className="text-white font-bold">{channel.label}</p>
+                <p className="text-on-surface-variant text-sm">{channel.value}</p>
+              </div>
+            </a>
+          );
+        })}
       </div>
 
       <p className="text-on-surface-variant text-xs mt-8 text-center">
