@@ -392,7 +392,7 @@ export default function Home() {
               </div>
 
               <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-                {GAMES_CATALOG.filter((game) => game.status === "active").map((game) => (
+                {GAMES_CATALOG.filter((game) => game.status === "active" && game.showOnHome !== false).map((game) => (
                   <div
                     key={game.slug}
                     className="group relative bg-surface-container-high rounded-xl overflow-hidden border border-outline-variant/20 hover:border-primary/50 transition-all hover:-translate-y-1"

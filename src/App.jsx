@@ -24,6 +24,8 @@ import Bingo from './components/Juegos/Bingo/bingo';
 import SantaWilds from './components/Juegos/SantaWilds/santawilds';
 import RoyalSlots from './components/Juegos/RoyalSlots/royalslots';
 import SugarCalavera from './components/Juegos/SugarCalavera/sugarcalavera';
+import Domino from './components/Juegos/Domino/domino';
+import GemasOfGold from './components/Juegos/GemasOfGold/gemasofgold';
 import API_URL from './api/rutaApi';
 import AboutUs from './components/AboutUs/aboutUs';
 import UserManagement from './components/AdminPanel/UserManagement/userManagement';
@@ -183,6 +185,8 @@ function App() {
             <Route path="/game/santawilds" element={<RequireAuth><SantaWilds /></RequireAuth>} />
             <Route path="/game/royalslots" element={<RequireAuth><RoyalSlots /></RequireAuth>} />
             <Route path="/game/sugarcalavera" element={<RequireAuth><SugarCalavera /></RequireAuth>} />
+            <Route path="/game/domino" element={<RequireAuth><Domino /></RequireAuth>} />
+            <Route path="/game/gemasofgold" element={<RequireAuth><GemasOfGold /></RequireAuth>} />
             <Route path="/royalstore" element={<RoyalStore />} />
             <Route path="/amigos" element={<Friends />} />
             <Route path="/mensajes" element={<Messages />} />

@@ -3,6 +3,8 @@ import minasImage from "../assets/minas2.png";
 import pachinkaImage from "../assets/rpachinka2.png";
 import bingoImage from "../assets/bingoproxi.png";
 import ruletaImage from "../assets/ruleta.png";
+import gemaOfGoldImage from "../assets/gemaOfGold.png";
+import dominoImage from "../assets/domino.png";
 
 // `chipClassName` es la misma paleta pero como píldora (fondo + borde translúcidos), para donde
 // la categoría necesita notarse de un vistazo (ej. la grilla de "Juegos Populares" del Home) en
@@ -74,6 +76,9 @@ export const GAMES_CATALOG = [
     icon: "diamond",
     players: 1650,
     playPath: "/game/royalslots",
+    // Sigue activo y jugable (/juegos, GameDetail, etc.) — solo se lo saca de la grilla de
+    // "Juegos Populares" del Home para hacerle lugar a Domino y GemasOfGold (tope de 8 tarjetas).
+    showOnHome: false,
     description:
       "La tragamonedas clásica de RoyalGames: rodillos cargados de símbolos dorados, multiplicadores y la chance de llevarte el premio mayor en cualquier giro.",
   },
@@ -233,8 +238,11 @@ export const GAMES_CATALOG = [
     slug: "gemas-of-gold",
     name: "GemasOfGold",
     category: "slots",
-    status: "soon",
+    status: "active",
+    image: gemaOfGoldImage,
     icon: "diamond",
+    players: 980,
+    playPath: "/game/gemasofgold",
     description:
       "Gemas brillantes y cascadas de oro: una tragamonedas clásica con multiplicadores en cadena para los amantes de lo simple y lo dorado.",
   },
@@ -242,8 +250,11 @@ export const GAMES_CATALOG = [
     slug: "domino",
     name: "Dominó",
     category: "mesa",
-    status: "soon",
+    status: "active",
+    image: dominoImage,
     icon: "view_module",
+    players: 860,
+    playPath: "/game/domino",
     description:
       "El clásico de fichas de toda la vida, ahora online: encadená tus números y dejá a tus rivales sin jugadas.",
   },
