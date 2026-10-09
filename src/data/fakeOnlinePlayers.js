@@ -6,6 +6,18 @@
  * shown in GamesCatalog/GameDetail.
  */
 
+// Nicks reales de cuentas bot y de staff (admin/mod) — estos SÍ existen de verdad en la
+// plataforma (los bots aparecen jugando/chateando en Bingo y demás; el staff tiene cuentas
+// reales), así que generateFakeOnlinePlayers los prioriza sobre el resto del pool: hace que el
+// contador de "jugadores conectados" se sienta real en vez de mostrar solo nombres inventados.
+// Lista estática a propósito (mismo criterio que el resto de este archivo) — si se agregan o
+// sacan bots/staff más adelante, actualizar esto a mano.
+const REAL_NICK_POOL = [
+    "bunnymedina", "carlos123", "elrusito", "luciaa", "luciaa22",
+    "manuelroyardo", "maxi", "rominagamer", "vandyck45",
+    "instinctgaming", "josesito7", "kann", "colucci", "manuroyo29", "moderator",
+];
+
 const FAKE_NICK_POOL = [
     "CarlosWins", "MariaFortuna", "ElReyDelBingo", "LunaDorada", "DiegoRuleta",
     "SofiaLucky7", "JuanPerezVIP", "GabrielaOro", "MateoChips", "ValeSuerte",
@@ -40,8 +52,9 @@ function shuffle(array) {
  */
 export function generateFakeOnlinePlayers(count, activeGames = []) {
     if (count <= 0) return [];
-    const nicks = shuffle(FAKE_NICK_POOL).slice(0, count);
-    // Pool has 60 entries; pad with numbered variants if more are ever requested.
+    // Nicks reales primero (bots + staff), el pool inventado solo rellena lo que sobra.
+    const nicks = [...shuffle(REAL_NICK_POOL), ...shuffle(FAKE_NICK_POOL)].slice(0, count);
+    // Pool combinado tiene 75 entradas; pad con variantes numeradas si se pide más que eso.
     while (nicks.length < count) {
         const base = FAKE_NICK_POOL[nicks.length % FAKE_NICK_POOL.length];
         nicks.push(`${base}${Math.floor(Math.random() * 90) + 10}`);
