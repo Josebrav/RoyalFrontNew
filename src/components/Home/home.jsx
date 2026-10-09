@@ -73,7 +73,7 @@ export default function Home() {
     axios.get(`${API_URL}/daily-bonus/status`).then(({ data }) => setDailyBonusStatus(data)).catch(() => {});
   }, [currentUser?.id]);
 
-  const handleDailyBonusClaimed = ({ amount, error }) => {
+  const handleDailyBonusClaimed = ({ error }) => {
     if (error) {
       setDailyBonusStatus((prev) => (prev ? { ...prev, canClaim: false } : prev));
       Swal.fire({ title: "Bono Diario", text: error, icon: "error", ...swalThemeConfig });
@@ -83,12 +83,6 @@ export default function Home() {
     if (currentUser?.email) {
       dispatch(getUserByEmail(currentUser.email));
     }
-    Swal.fire({
-      title: "Bono Diario",
-      text: `¡Ganaste ${new Intl.NumberFormat("es-ES").format(amount)} fichas!`,
-      icon: "success",
-      ...swalThemeConfig,
-    });
   };
 
   // Real recent wins (chips actually won in games) for the guest landing page ticker.
